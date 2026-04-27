@@ -246,6 +246,59 @@ const { createClient } = supabase
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 // ══════════════════════════════════════════════
+//  ASSETS — Structure des dossiers attendus
+// ══════════════════════════════════════════════
+// Dans ton repo GitHub, crée cette structure :
+//
+// assets/
+// ├── classes/
+// │   ├── ecaflip/
+// │   │   ├── idle.gif         ← animation idle (ou .png statique)
+// │   │   ├── attaque.gif      ← animation attaque
+// │   │   └── portrait.png     ← portrait dans le lobby
+// │   ├── iop/
+// │   │   ├── idle.gif
+// │   │   ├── attaque.gif
+// │   │   └── portrait.png
+// │   ├── cra/ ...
+// │   └── eniripsa/ ...
+// ├── monstres/
+// │   ├── piou_rouge/
+// │   │   ├── idle.gif
+// │   │   └── attaque.gif
+// │   ├── piou_bleu/ ...
+// │   ├── piou_vert/ ...
+// │   ├── piou_violet/ ...
+// │   ├── piou_royal/
+// │   │   ├── idle.gif
+// │   │   └── attaque.gif
+// │   ├── bouftou/ ...
+// │   ├── bouftou_nain/ ...
+// │   ├── bouftou_royal/ ...
+// │   ├── roi_bouftou/ ...
+// │   ├── larve_bleue/ ...
+// │   ├── larve_verte/ ...
+// │   ├── larve_jaune/ ...
+// │   └── reine_larves/ ...
+// ├── sorts/
+// │   ├── griffe.png
+// │   ├── pile_ou_face.png
+// │   └── ... (icônes 40x40px)
+// └── ui/
+//     ├── fond_combat.jpg      ← fond de l'arène
+//     ├── kamas.png            ← icône kamas
+//     └── logo.png             ← logo du jeu
+
+// Fonction utilitaire — charge une image, fallback sur emoji si absente
+function imgOuEmoji(src, emoji, w=80, h=80, extraClass='') {
+  return `<img src="${src}" 
+    style="width:${w}px;height:${h}px;object-fit:contain;image-rendering:pixelated;" 
+    class="${extraClass}"
+    onerror="this.outerHTML='<span style=\\'font-size:${Math.floor(h*0.45)}px;line-height:${h}px;\\'>${emoji}</span>'"
+  />`
+}
+
+// ══════════════════════════════════════════════
 //  DONNÉES DU JEU
 // ══════════════════════════════════════════════
 const CLASSES = [
@@ -405,7 +458,12 @@ function afficherClasses() {
   const grid = document.getElementById('classe-grid')
   grid.innerHTML = CLASSES.map(c => `
     <div class="classe-card" onclick="selectClasse('${c.id}')" id="classe-${c.id}">
-      <div class="icon">${c.icon}</div>
+      <div class="icon">
+        <img src="assets/classes/${c.id}/portrait.png" 
+          style="width:52px;height:52px;object-fit:contain;image-rendering:pixelated;"
+          onerror="this.outerHTML='<span style=\\'font-size:28px;\\'>${c.icon}</span>'"
+        />
+      </div>
       <div class="nom">${c.nom}</div>
       <div class="desc">${c.desc}</div>
     </div>
@@ -456,14 +514,28 @@ function afficherPersoPanel() {
     info.style.display = 'block'
     info.innerHTML = `
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-        <div style="font-size:40px">${classe.icon}</div>
+        <img src="assets/classes/${classe.id}/portrait.png"
+          style="width:64px;height:64px;object-fit:contain;image-rendering:pixelated;border-radius:8px;background:#0d1120;"
+          onerror="this.outerHTML='<span style=\\'font-size:48px;\\'>${classe.icon}</span>'"
+        />
         <div>
           <div style="font-size:16px;font-weight:700">${currentPerso.nom}</div>
           <div style="font-size:13px;color:#f0a500">${classe.nom} — Niv. ${currentPerso.niveau}</div>
           <div style="font-size:12px;color:#777">XP: ${currentPerso.xp} | HP: ${currentPerso.hp_max} | PA: ${currentPerso.pa_max}</div>
         </div>
       </div>
-      <div style="font-size:12px;color:#777">Sorts : ${classe.sorts.join(', ')}</div>
+      <div style="font-size:12px;color:#555;margin-bottom:8px">Sorts :</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${classe.sorts.map(s => `
+          <div style="display:flex;align-items:center;gap:6px;background:#0d1120;border:1px solid #1a2540;border-radius:6px;padding:6px 10px;">
+            <img src="assets/sorts/${s.toLowerCase().replace(/ /g,'_').replace(/é/g,'e').replace(/è/g,'e')}.png"
+              style="width:24px;height:24px;object-fit:contain;image-rendering:pixelated;"
+              onerror="this.style.display='none'"
+            />
+            <span style="font-size:12px;color:#ddd">${s}</span>
+          </div>
+        `).join('')}
+      </div>
     `
   }
 }
@@ -590,24 +662,40 @@ function lancerCombat() {
   logCombat(`⚔️ Combat ${combatIndex + 1} commence !`)
 }
 
+function slugify(s) {
+  return s.toLowerCase().replace(/ /g,'_').replace(/[éè]/g,'e').replace(/[à]/g,'a').replace(/'/g,'').replace(/[^a-z0-9_]/g,'')
+}
+
 function renderCombat() {
   const s = combatState
   document.getElementById('tour-info').textContent = `Tour ${s.tourNum} — ${s.phase === 'joueur' ? '🟡 Joueurs' : '🔴 Ennemis'}`
 
   // Ennemis
-  document.getElementById('ennemis-row').innerHTML = s.ennemis.map((e, i) => `
+  document.getElementById('ennemis-row').innerHTML = s.ennemis.map((e, i) => {
+    const slug = slugify(e.nom)
+    return `
     <div class="unit-card">
-      <div class="unit-sprite ${e.mort ? 'dead' : ''}" id="ennemi-sprite-${i}">${e.icon}</div>
+      <div class="unit-sprite ${e.mort ? 'dead' : ''}" id="ennemi-sprite-${i}">
+        <img src="assets/monstres/${slug}/idle.png"
+          style="width:80px;height:80px;object-fit:contain;image-rendering:pixelated;"
+          onerror="this.outerHTML='<span style=\\'font-size:40px;line-height:80px;\\'>${e.icon}</span>'"
+        />
+      </div>
       <div class="unit-nom">${e.nom}</div>
       <div class="hp-bar-wrap"><div class="hp-bar ${e.hp/e.hp_max < 0.3 ? 'low' : ''}" style="width:${Math.max(0,e.hp/e.hp_max*100)}%"></div></div>
       <div class="hp-text">${Math.max(0,e.hp)}/${e.hp_max}</div>
-    </div>
-  `).join('')
+    </div>`
+  }).join('')
 
   // Joueurs
   document.getElementById('joueurs-row').innerHTML = s.joueurs.map((j, i) => `
     <div class="unit-card">
-      <div class="unit-sprite ${j.mort ? 'dead' : ''} ${i === s.joueurActifIndex && s.phase === 'joueur' ? 'active' : ''}" id="joueur-sprite-${i}">${j.icon}</div>
+      <div class="unit-sprite ${j.mort ? 'dead' : ''} ${i === s.joueurActifIndex && s.phase === 'joueur' ? 'active' : ''}" id="joueur-sprite-${i}">
+        <img src="assets/classes/${j.classe}/idle.png"
+          style="width:80px;height:80px;object-fit:contain;image-rendering:pixelated;"
+          onerror="this.outerHTML='<span style=\\'font-size:40px;line-height:80px;\\'>${j.icon}</span>'"
+        />
+      </div>
       <div class="unit-nom">${j.nom} ${i === s.joueurActifIndex && s.phase === 'joueur' ? '<span class="tag-joueur-actif">Actif</span>' : ''}</div>
       <div class="hp-bar-wrap"><div class="hp-bar ${j.hp/j.hp_max < 0.3 ? 'low' : ''}" style="width:${Math.max(0,j.hp/j.hp_max*100)}%"></div></div>
       <div class="hp-text">${Math.max(0,j.hp)}/${j.hp_max}</div>
@@ -615,22 +703,33 @@ function renderCombat() {
     </div>
   `).join('')
 
-  // Sorts
+  // Sorts avec icônes
   const joueurActif = s.joueurs[s.joueurActifIndex]
   const classe = CLASSES.find(c => c.id === joueurActif?.classe)
   const isMonTour = s.phase === 'joueur' && joueurActif?.joueur_id === currentUser.id
 
-  document.getElementById('sorts-label').textContent = isMonTour ? `Sorts de ${joueurActif.nom} (${joueurActif.pa} PA restants)` : s.phase === 'ennemi' ? 'Tour des ennemis...' : `Tour de ${joueurActif?.nom}...`
+  document.getElementById('sorts-label').textContent = isMonTour 
+    ? `Sorts de ${joueurActif.nom} (${joueurActif.pa} PA restants)` 
+    : s.phase === 'ennemi' ? 'Tour des ennemis...' : `Tour de ${joueurActif?.nom}...`
 
   document.getElementById('sorts-grid').innerHTML = (classe?.sorts || []).map(sortNom => {
     const sort = SORTS_DATA[sortNom]
     const peutUtiliser = isMonTour && joueurActif.pa >= sort.cout
     const dmgText = sort.soin > 0 ? `+${sort.soin} soin` : `${sort.degats[0]}-${sort.degats[1]} dmg`
+    const slug = slugify(sortNom)
     return `
       <button class="sort-btn" ${!peutUtiliser ? 'disabled' : ''} onclick="utiliserSort('${sortNom}')">
-        <div class="sort-nom">${sortNom}</div>
-        <div class="sort-cout">${sort.cout} PA</div>
-        <div class="sort-dmg">${dmgText}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <img src="assets/sorts/${slug}.png"
+            style="width:28px;height:28px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;"
+            onerror="this.style.display='none'"
+          />
+          <div>
+            <div class="sort-nom">${sortNom}</div>
+            <div class="sort-cout">${sort.cout} PA</div>
+            <div class="sort-dmg">${dmgText}</div>
+          </div>
+        </div>
       </button>
     `
   }).join('') + (isMonTour ? `<button class="btn-passer" onclick="passerTour()">Passer →</button>` : '')
