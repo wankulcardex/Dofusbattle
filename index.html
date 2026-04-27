@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DofusBattle</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0e1a; color: #fff; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
+
+  /* ── ÉCRANS ── */
+  .screen { display: none; width: 100%; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+  /* ── AUTH ── */
+  .auth-box { background: #13192e; border: 1px solid #2a3a6e; border-radius: 16px; padding: 40px; width: 380px; }
+  .auth-box h1 { text-align: center; font-size: 28px; color: #f0a500; margin-bottom: 8px; }
+  .auth-box p { text-align: center; color: #888; margin-bottom: 28px; font-size: 13px; }
+  .auth-box input { width: 100%; padding: 12px 16px; background: #0d1120; border: 1px solid #2a3a6e; border-radius: 8px; color: #fff; font-size: 14px; margin-bottom: 12px; outline: none; }
+  .auth-box input:focus { border-color: #f0a500; }
+  .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; }
+  .btn-gold { background: #f0a500; color: #000; width: 100%; margin-top: 8px; }
+  .btn-gold:hover { background: #ffc233; }
+  .btn-outline { background: transparent; border: 1px solid #2a3a6e; color: #aaa; width: 100%; margin-top: 8px; }
+  .btn-outline:hover { border-color: #f0a500; color: #f0a500; }
+  .error-msg { color: #ff5555; font-size: 13px; text-align: center; margin-top: 8px; min-height: 20px; }
+
+  /* ── LOBBY ── */
+  #screen-lobby { background: radial-gradient(ellipse at center, #0d1530 0%, #060a14 100%); }
+  .lobby-header { width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #1a2540; margin-bottom: 30px; }
+  .lobby-header h2 { color: #f0a500; font-size: 22px; }
+  .user-info { display: flex; align-items: center; gap: 12px; }
+  .user-info span { color: #aaa; font-size: 13px; }
+  .kamas { color: #f0a500; font-weight: 700; }
+  .lobby-content { width: 100%; max-width: 900px; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .panel { background: #13192e; border: 1px solid #1a2540; border-radius: 12px; padding: 24px; }
+  .panel h3 { color: #f0a500; margin-bottom: 16px; font-size: 16px; }
+
+  /* ── PERSONNAGE ── */
+  .classe-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .classe-card { background: #0d1120; border: 2px solid #1a2540; border-radius: 8px; padding: 12px; cursor: pointer; text-align: center; transition: all 0.2s; }
+  .classe-card:hover, .classe-card.selected { border-color: #f0a500; background: #1a2010; }
+  .classe-card .icon { font-size: 28px; margin-bottom: 4px; }
+  .classe-card .nom { font-size: 13px; font-weight: 600; color: #ddd; }
+  .classe-card .desc { font-size: 11px; color: #777; margin-top: 2px; }
+  .perso-input { width: 100%; padding: 10px 14px; background: #0d1120; border: 1px solid #2a3a6e; border-radius: 8px; color: #fff; font-size: 14px; margin-bottom: 12px; outline: none; }
+
+  /* ── DONJONS ── */
+  .donjon-card { background: #0d1120; border: 1px solid #1a2540; border-radius: 8px; padding: 14px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; }
+  .donjon-card:hover:not(.locked) { border-color: #f0a500; }
+  .donjon-card.locked { opacity: 0.4; cursor: not-allowed; }
+  .donjon-card .donjon-info h4 { font-size: 14px; color: #ddd; }
+  .donjon-card .donjon-info p { font-size: 12px; color: #777; margin-top: 2px; }
+  .donjon-badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; }
+  .badge-open { background: #1a3a1a; color: #55cc55; }
+  .badge-locked { background: #2a1a1a; color: #cc5555; }
+  .badge-done { background: #1a2a3a; color: #5599cc; }
+
+  /* ── GROUPE ── */
+  .groupe-slot { background: #0d1120; border: 1px dashed #2a3a6e; border-radius: 8px; padding: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+  .groupe-slot.filled { border-style: solid; border-color: #2a5a2a; }
+  .slot-avatar { width: 36px; height: 36px; border-radius: 50%; background: #1a2540; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .slot-info { flex: 1; }
+  .slot-info .slot-nom { font-size: 13px; font-weight: 600; }
+  .slot-info .slot-classe { font-size: 11px; color: #777; }
+  .code-invite { background: #0d1120; border: 1px solid #2a3a6e; border-radius: 8px; padding: 12px; margin-top: 12px; text-align: center; }
+  .code-invite .code { font-size: 22px; font-weight: 700; color: #f0a500; letter-spacing: 4px; margin: 6px 0; }
+  .code-invite p { font-size: 11px; color: #777; }
+  .join-row { display: flex; gap: 8px; margin-top: 12px; }
+  .join-row input { flex: 1; padding: 10px; background: #0d1120; border: 1px solid #2a3a6e; border-radius: 8px; color: #fff; font-size: 14px; outline: none; text-transform: uppercase; letter-spacing: 2px; }
+  .btn-sm { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; background: #f0a500; color: #000; white-space: nowrap; }
+
+  /* ── COMBAT ── */
+  #screen-combat { background: #060a14; flex-direction: column; padding: 0; }
+  .combat-top { width: 100%; padding: 12px 20px; background: #0a0e1a; border-bottom: 1px solid #1a2540; display: flex; justify-content: space-between; align-items: center; }
+  .combat-top h3 { color: #f0a500; font-size: 14px; }
+  .tour-info { font-size: 13px; color: #aaa; }
+  .combat-arena { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; position: relative; }
+  .ennemis-row { display: flex; justify-content: center; gap: 40px; padding-top: 20px; }
+  .joueurs-row { display: flex; justify-content: center; gap: 40px; padding-bottom: 10px; }
+  .unit-card { text-align: center; position: relative; }
+  .unit-sprite { width: 80px; height: 80px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 8px; border: 2px solid transparent; transition: all 0.3s; }
+  .unit-sprite.active { border-color: #f0a500; box-shadow: 0 0 15px #f0a50066; }
+  .unit-sprite.dead { opacity: 0.3; filter: grayscale(1); }
+  .unit-sprite img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+  .unit-nom { font-size: 12px; font-weight: 600; color: #ddd; margin-bottom: 4px; }
+  .hp-bar-wrap { width: 80px; height: 8px; background: #1a2540; border-radius: 4px; overflow: hidden; margin: 0 auto 2px; }
+  .hp-bar { height: 100%; background: #44cc44; border-radius: 4px; transition: width 0.5s; }
+  .hp-bar.low { background: #cc4444; }
+  .hp-text { font-size: 10px; color: #888; }
+  .pa-dots { display: flex; justify-content: center; gap: 3px; margin-top: 4px; }
+  .pa-dot { width: 8px; height: 8px; border-radius: 50%; background: #f0a500; }
+  .pa-dot.used { background: #2a2a2a; }
+
+  /* ── LOG COMBAT ── */
+  .combat-log { background: #0a0e1a; border-top: 1px solid #1a2540; border-bottom: 1px solid #1a2540; padding: 8px 20px; min-height: 36px; }
+  .combat-log p { font-size: 13px; color: #aaa; }
+  .combat-log p span { color: #f0a500; font-weight: 600; }
+
+  /* ── SORTS PANEL ── */
+  .sorts-panel { padding: 16px 20px; background: #0a0e1a; }
+  .sorts-panel h4 { font-size: 12px; color: #777; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+  .sorts-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+  .sort-btn { background: #13192e; border: 1px solid #2a3a6e; border-radius: 8px; padding: 10px 16px; cursor: pointer; transition: all 0.2s; color: #fff; min-width: 120px; }
+  .sort-btn:hover:not(:disabled) { border-color: #f0a500; background: #1a2010; }
+  .sort-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .sort-btn .sort-nom { font-size: 13px; font-weight: 600; }
+  .sort-btn .sort-cout { font-size: 11px; color: #f0a500; margin-top: 2px; }
+  .sort-btn .sort-dmg { font-size: 11px; color: #cc5555; }
+  .btn-passer { background: #1a2540; border: 1px solid #2a3a6e; border-radius: 8px; padding: 10px 20px; cursor: pointer; color: #aaa; font-size: 13px; transition: all 0.2s; }
+  .btn-passer:hover { border-color: #aaa; color: #fff; }
+
+  /* ── RÉCOMPENSES ── */
+  .recompense-box { background: #13192e; border: 1px solid #f0a500; border-radius: 16px; padding: 32px; width: 420px; text-align: center; }
+  .recompense-box h2 { color: #f0a500; font-size: 24px; margin-bottom: 8px; }
+  .recompense-box .sous-titre { color: #888; font-size: 13px; margin-bottom: 24px; }
+  .recompense-items { display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .recompense-item { background: #0d1120; border: 1px solid #2a3a6e; border-radius: 8px; padding: 12px 16px; text-align: center; }
+  .recompense-item .ri-icon { font-size: 24px; margin-bottom: 4px; }
+  .recompense-item .ri-val { font-size: 16px; font-weight: 700; color: #f0a500; }
+  .recompense-item .ri-label { font-size: 11px; color: #777; }
+
+  /* ── UTILITAIRES ── */
+  .separator { text-align: center; color: #2a3a6e; margin: 12px 0; font-size: 12px; }
+  .loading { color: #f0a500; font-size: 14px; text-align: center; padding: 20px; }
+  .tag-joueur-actif { font-size: 10px; background: #f0a500; color: #000; border-radius: 4px; padding: 2px 6px; font-weight: 700; }
+
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+  .hit { animation: shake 0.4s ease; }
+  .attack { animation: pulse 0.3s ease; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  ÉCRAN 1 : AUTH                           -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-auth" class="screen active">
+  <div class="auth-box">
+    <h1>⚔️ DofusBattle</h1>
+    <p>Combats en groupe style Dofus</p>
+    <input type="email" id="auth-email" placeholder="Email" />
+    <input type="password" id="auth-password" placeholder="Mot de passe" />
+    <input type="text" id="auth-username" placeholder="Pseudo (inscription)" />
+    <button class="btn btn-gold" onclick="inscrire()">S'inscrire</button>
+    <div class="separator">— ou —</div>
+    <button class="btn btn-outline" onclick="connecter()">Se connecter</button>
+    <div class="error-msg" id="auth-error"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  ÉCRAN 2 : LOBBY                          -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-lobby" class="screen">
+  <div class="lobby-header">
+    <h2>⚔️ DofusBattle</h2>
+    <div class="user-info">
+      <span id="lobby-username"></span>
+      <span class="kamas" id="lobby-kamas">0 💰</span>
+      <button class="btn btn-outline" style="width:auto;padding:6px 14px;font-size:12px" onclick="deconnecter()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="lobby-content">
+    <!-- Colonne gauche : Personnage + Groupe -->
+    <div>
+      <div class="panel" style="margin-bottom:20px">
+        <h3>🧙 Mon personnage</h3>
+        <div id="perso-panel">
+          <input class="perso-input" id="perso-nom" placeholder="Nom du personnage" />
+          <div class="classe-grid" id="classe-grid"></div>
+          <button class="btn btn-gold" onclick="creerPersonnage()">Créer</button>
+        </div>
+        <div id="perso-info" style="display:none"></div>
+      </div>
+
+      <div class="panel">
+        <h3>👥 Groupe</h3>
+        <div id="groupe-slots"></div>
+        <div class="code-invite" id="code-invite-box" style="display:none">
+          <p>Code d'invitation</p>
+          <div class="code" id="code-invite-val"></div>
+          <p>Partage ce code à tes amis</p>
+        </div>
+        <div class="join-row">
+          <input id="join-code" placeholder="CODE" maxlength="6" oninput="this.value=this.value.toUpperCase()" />
+          <button class="btn-sm" onclick="rejoindreGroupe()">Rejoindre</button>
+        </div>
+        <button class="btn btn-outline" style="margin-top:10px" onclick="creerGroupe()">Créer un groupe</button>
+      </div>
+    </div>
+
+    <!-- Colonne droite : Donjons -->
+    <div class="panel">
+      <h3>🏰 Donjons</h3>
+      <div id="donjons-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  ÉCRAN 3 : COMBAT                         -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-combat" class="screen">
+  <div class="combat-top">
+    <h3 id="combat-titre">Donjon des Pioux — Combat 1/4</h3>
+    <div class="tour-info" id="tour-info">Tour 1</div>
+  </div>
+
+  <div class="combat-arena">
+    <div class="ennemis-row" id="ennemis-row"></div>
+    <div class="joueurs-row" id="joueurs-row"></div>
+  </div>
+
+  <div class="combat-log"><p id="combat-log-text">Le combat commence !</p></div>
+
+  <div class="sorts-panel">
+    <h4 id="sorts-label">Tes sorts</h4>
+    <div class="sorts-grid" id="sorts-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  ÉCRAN 4 : RÉCOMPENSES                    -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-recompense" class="screen">
+  <div class="recompense-box">
+    <h2 id="recomp-titre">🏆 Victoire !</h2>
+    <p class="sous-titre" id="recomp-sous-titre"></p>
+    <div class="recompense-items" id="recomp-items"></div>
+    <button class="btn btn-gold" onclick="continuerDonjon()">Continuer</button>
+    <button class="btn btn-outline" style="margin-top:8px" onclick="allerLobby()">Retour au lobby</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONFIG SUPABASE
+// ══════════════════════════════════════════════
+const SUPABASE_URL = 'https://vlbnbfyxpaybgwetffam.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_QNl5VZsSQJz_kQcw72gbLA_VL7L6C2k'
+const { createClient } = supabase
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+// ══════════════════════════════════════════════
+//  DONNÉES DU JEU
+// ══════════════════════════════════════════════
+const CLASSES = [
+  { id: 'ecaflip',  nom: 'Ecaflip',  icon: '🐱', desc: 'Chanceux & imprévisible', hp: 120, pa: 6, sorts: ['Griffe','Pile ou Face','Roue de la Fortune'] },
+  { id: 'iop',      nom: 'Iop',      icon: '⚔️', desc: 'Guerrier puissant',       hp: 150, pa: 6, sorts: ['Epée Divine','Concentration','Colère'] },
+  { id: 'cra',      nom: 'Cra',      icon: '🏹', desc: 'Archer de précision',     hp: 100, pa: 6, sorts: ['Flèche Magique','Flèche Explosive','Recul'] },
+  { id: 'eniripsa', nom: 'Eniripsa', icon: '💊', desc: 'Soigneur du groupe',      hp: 90,  pa: 6, sorts: ['Soin','Mot Revitalisant','Malédiction'] },
+]
+
+const SORTS_DATA = {
+  'Griffe':             { degats: [12,18], soin: 0, cout: 2, cible: 'ennemi' },
+  'Pile ou Face':       { degats: [5,40],  soin: 0, cout: 3, cible: 'ennemi' },
+  'Roue de la Fortune': { degats: [20,30], soin: 0, cout: 4, cible: 'ennemi' },
+  'Epée Divine':        { degats: [20,25], soin: 0, cout: 3, cible: 'ennemi' },
+  'Concentration':      { degats: [30,35], soin: 0, cout: 4, cible: 'ennemi' },
+  'Colère':             { degats: [35,45], soin: 0, cout: 5, cible: 'ennemi' },
+  'Flèche Magique':     { degats: [15,20], soin: 0, cout: 2, cible: 'ennemi' },
+  'Flèche Explosive':   { degats: [25,35], soin: 0, cout: 4, cible: 'ennemi' },
+  'Recul':              { degats: [10,15], soin: 0, cout: 2, cible: 'ennemi' },
+  'Soin':               { degats: [0,0],   soin: 25, cout: 3, cible: 'allie' },
+  'Mot Revitalisant':   { degats: [0,0],   soin: 40, cout: 4, cible: 'allie' },
+  'Malédiction':        { degats: [18,24], soin: 0, cout: 3, cible: 'ennemi' },
+}
+
+const DONJONS = [
+  {
+    id: 'piou', nom: 'Donjon des Pioux', icon: '🐦', niveau: 1, debloque: true,
+    combats: [
+      { ennemis: [{nom:'Piou Rouge', icon:'🐦', hp:60, pa:3, degats:[8,14]}] },
+      { ennemis: [{nom:'Piou Bleu',  icon:'🐦', hp:70, pa:3, degats:[10,16]}, {nom:'Piou Vert', icon:'🐦', hp:50, pa:2, degats:[6,10]}] },
+      { ennemis: [{nom:'Piou Violet',icon:'🐦', hp:80, pa:4, degats:[12,18]}, {nom:'Piou Rouge',icon:'🐦', hp:60, pa:3, degats:[8,14]}] },
+      { ennemis: [{nom:'Piou Royal', icon:'👑', hp:180, pa:5, degats:[18,28]}], boss: true },
+    ],
+    recompense: { kamas: [500,1200], xp: 800, items: ['Plume de Piou','Aile de Piou'] }
+  },
+  {
+    id: 'bouftou', nom: 'Donjon Bouftou', icon: '🐑', niveau: 10, debloque: false,
+    combats: [
+      { ennemis: [{nom:'Bouftou',      icon:'🐑', hp:100, pa:4, degats:[14,20]}] },
+      { ennemis: [{nom:'Bouftou',      icon:'🐑', hp:100, pa:4, degats:[14,20]}, {nom:'Bouftou Nain', icon:'🐑', hp:70, pa:3, degats:[10,16]}] },
+      { ennemis: [{nom:'Bouftou Royal',icon:'🐑', hp:120, pa:5, degats:[18,24]}, {nom:'Bouftou',     icon:'🐑', hp:100, pa:4, degats:[14,20]}] },
+      { ennemis: [{nom:'Roi Bouftou',  icon:'👑', hp:280, pa:6, degats:[24,36]}], boss: true },
+    ],
+    recompense: { kamas: [1500,3000], xp: 2000, items: ['Laine de Bouftou','Cape Bouftou'] }
+  },
+  {
+    id: 'larve', nom: 'Donjon des Larves', icon: '🐛', niveau: 20, debloque: false,
+    combats: [
+      { ennemis: [{nom:'Larve Bleue',  icon:'🐛', hp:130, pa:4, degats:[16,24]}] },
+      { ennemis: [{nom:'Larve Bleue',  icon:'🐛', hp:130, pa:4, degats:[16,24]}, {nom:'Larve Verte',icon:'🐛', hp:100, pa:3, degats:[12,18]}] },
+      { ennemis: [{nom:'Larve Jaune',  icon:'🐛', hp:160, pa:5, degats:[20,30]}, {nom:'Larve Bleue',icon:'🐛', hp:130, pa:4, degats:[16,24]}] },
+      { ennemis: [{nom:'Reine des Larves', icon:'👑', hp:400, pa:6, degats:[30,45]}], boss: true },
+    ],
+    recompense: { kamas: [3000,6000], xp: 4500, items: ['Carapace de Larve','Dard de Larve'] }
+  },
+]
+
+// ══════════════════════════════════════════════
+//  ÉTAT GLOBAL
+// ══════════════════════════════════════════════
+let currentUser = null
+let currentPerso = null
+let currentGroupe = null
+let combatState = null
+let donjonActif = null
+let combatIndex = 0
+
+// ══════════════════════════════════════════════
+//  INIT — CRÉER LES TABLES SI NÉCESSAIRE
+// ══════════════════════════════════════════════
+async function initDB() {
+  // Les tables sont créées via Supabase dashboard
+  // On vérifie juste la session
+  const { data: { session } } = await sb.auth.getSession()
+  if (session) {
+    currentUser = session.user
+    await chargerPerso()
+    afficherLobby()
+  }
+}
+
+// ══════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════
+async function inscrire() {
+  const email = document.getElementById('auth-email').value
+  const password = document.getElementById('auth-password').value
+  const username = document.getElementById('auth-username').value
+  setError('')
+
+  if (!username) { setError('Entre un pseudo !'); return }
+
+  const { data, error } = await sb.auth.signUp({
+    email, password,
+    options: { data: { username } }
+  })
+
+  if (error) { setError(error.message); return }
+
+  // Créer le profil joueur
+  await sb.from('joueurs').insert({
+    id: data.user.id,
+    username,
+    email,
+    kamas: 0
+  })
+
+  currentUser = data.user
+  afficherLobby()
+}
+
+async function connecter() {
+  const email = document.getElementById('auth-email').value
+  const password = document.getElementById('auth-password').value
+  setError('')
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password })
+  if (error) { setError(error.message); return }
+
+  currentUser = data.user
+  await chargerPerso()
+  afficherLobby()
+}
+
+async function deconnecter() {
+  await sb.auth.signOut()
+  currentUser = null
+  currentPerso = null
+  currentGroupe = null
+  afficherEcran('screen-auth')
+}
+
+function setError(msg) {
+  document.getElementById('auth-error').textContent = msg
+}
+
+// ══════════════════════════════════════════════
+//  LOBBY
+// ══════════════════════════════════════════════
+async function afficherLobby() {
+  afficherEcran('screen-lobby')
+  
+  // Charger infos joueur
+  const { data: joueur } = await sb.from('joueurs').select('*').eq('id', currentUser.id).single()
+  if (joueur) {
+    document.getElementById('lobby-username').textContent = joueur.username
+    document.getElementById('lobby-kamas').textContent = joueur.kamas + ' 💰'
+  }
+
+  afficherClasses()
+  afficherPersoPanel()
+  afficherDonjons()
+  afficherGroupe()
+}
+
+function afficherClasses() {
+  const grid = document.getElementById('classe-grid')
+  grid.innerHTML = CLASSES.map(c => `
+    <div class="classe-card" onclick="selectClasse('${c.id}')" id="classe-${c.id}">
+      <div class="icon">${c.icon}</div>
+      <div class="nom">${c.nom}</div>
+      <div class="desc">${c.desc}</div>
+    </div>
+  `).join('')
+}
+
+let classeSelectionnee = null
+function selectClasse(id) {
+  classeSelectionnee = id
+  document.querySelectorAll('.classe-card').forEach(c => c.classList.remove('selected'))
+  document.getElementById('classe-' + id).classList.add('selected')
+}
+
+async function creerPersonnage() {
+  const nom = document.getElementById('perso-nom').value
+  if (!nom || !classeSelectionnee) { alert('Choisis un nom et une classe !'); return }
+
+  const classe = CLASSES.find(c => c.id === classeSelectionnee)
+
+  const { data, error } = await sb.from('personnages').insert({
+    joueur_id: currentUser.id,
+    nom,
+    classe: classeSelectionnee,
+    niveau: 1,
+    xp: 0,
+    hp_max: classe.hp,
+    pa_max: classe.pa,
+    donjons_completes: []
+  }).select().single()
+
+  if (error) { alert(error.message); return }
+  currentPerso = data
+  afficherPersoPanel()
+}
+
+async function chargerPerso() {
+  const { data } = await sb.from('personnages').select('*').eq('joueur_id', currentUser.id).single()
+  if (data) currentPerso = data
+}
+
+function afficherPersoPanel() {
+  const panel = document.getElementById('perso-panel')
+  const info = document.getElementById('perso-info')
+
+  if (currentPerso) {
+    const classe = CLASSES.find(c => c.id === currentPerso.classe)
+    panel.style.display = 'none'
+    info.style.display = 'block'
+    info.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="font-size:40px">${classe.icon}</div>
+        <div>
+          <div style="font-size:16px;font-weight:700">${currentPerso.nom}</div>
+          <div style="font-size:13px;color:#f0a500">${classe.nom} — Niv. ${currentPerso.niveau}</div>
+          <div style="font-size:12px;color:#777">XP: ${currentPerso.xp} | HP: ${currentPerso.hp_max} | PA: ${currentPerso.pa_max}</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#777">Sorts : ${classe.sorts.join(', ')}</div>
+    `
+  }
+}
+
+function afficherDonjons() {
+  const list = document.getElementById('donjons-list')
+  const completes = currentPerso?.donjons_completes || []
+  
+  list.innerHTML = DONJONS.map((d, i) => {
+    const done = completes.includes(d.id)
+    const locked = !d.debloque && i > 0 && !completes.includes(DONJONS[i-1]?.id)
+    const badge = done ? `<span class="donjon-badge badge-done">✓ Complété</span>` 
+                : locked ? `<span class="donjon-badge badge-locked">🔒 Verrouillé</span>`
+                : `<span class="donjon-badge badge-open">▶ Disponible</span>`
+    return `
+      <div class="donjon-card ${locked ? 'locked' : ''}" onclick="${locked ? '' : `lancerDonjon('${d.id}')`}">
+        <div class="donjon-info">
+          <h4>${d.icon} ${d.nom}</h4>
+          <p>${d.combats.length} combats • Niv. ${d.niveau}+</p>
+        </div>
+        ${badge}
+      </div>
+    `
+  }).join('')
+}
+
+function afficherGroupe() {
+  const slots = document.getElementById('groupe-slots')
+  if (!currentGroupe) {
+    slots.innerHTML = `<div style="color:#777;font-size:13px;text-align:center;padding:20px">Pas encore dans un groupe</div>`
+    document.getElementById('code-invite-box').style.display = 'none'
+    return
+  }
+
+  const membres = currentGroupe.membres || []
+  const html = [0,1,2,3].map(i => {
+    const m = membres[i]
+    if (m) {
+      const c = CLASSES.find(cl => cl.id === m.classe)
+      return `<div class="groupe-slot filled">
+        <div class="slot-avatar">${c?.icon || '👤'}</div>
+        <div class="slot-info">
+          <div class="slot-nom">${m.nom} ${m.joueur_id === currentUser.id ? '<span class="tag-joueur-actif">Toi</span>' : ''}</div>
+          <div class="slot-classe">${c?.nom || ''} — Niv. ${m.niveau}</div>
+        </div>
+      </div>`
+    }
+    return `<div class="groupe-slot"><div class="slot-avatar">➕</div><div class="slot-info"><div class="slot-nom" style="color:#555">Slot libre</div></div></div>`
+  }).join('')
+  slots.innerHTML = html
+
+  document.getElementById('code-invite-box').style.display = 'block'
+  document.getElementById('code-invite-val').textContent = currentGroupe.code
+}
+
+async function creerGroupe() {
+  if (!currentPerso) { alert('Crée un personnage d\'abord !'); return }
+  const code = Math.random().toString(36).substring(2,8).toUpperCase()
+
+  const { data, error } = await sb.from('groupes').insert({
+    code,
+    chef_id: currentUser.id,
+    membres: [{ joueur_id: currentUser.id, nom: currentPerso.nom, classe: currentPerso.classe, niveau: currentPerso.niveau }],
+    statut: 'lobby'
+  }).select().single()
+
+  if (error) { alert(error.message); return }
+  currentGroupe = data
+  afficherGroupe()
+}
+
+async function rejoindreGroupe() {
+  if (!currentPerso) { alert('Crée un personnage d\'abord !'); return }
+  const code = document.getElementById('join-code').value.trim()
+  if (!code) return
+
+  const { data: groupe, error } = await sb.from('groupes').select('*').eq('code', code).single()
+  if (error || !groupe) { alert('Code invalide !'); return }
+
+  const membres = groupe.membres || []
+  if (membres.length >= 4) { alert('Groupe plein !'); return }
+  if (membres.find(m => m.joueur_id === currentUser.id)) { alert('Tu es déjà dans ce groupe !'); return }
+
+  membres.push({ joueur_id: currentUser.id, nom: currentPerso.nom, classe: currentPerso.classe, niveau: currentPerso.niveau })
+
+  await sb.from('groupes').update({ membres }).eq('id', groupe.id)
+  currentGroupe = { ...groupe, membres }
+  afficherGroupe()
+}
+
+// ══════════════════════════════════════════════
+//  COMBAT
+// ══════════════════════════════════════════════
+function lancerDonjon(donjonId) {
+  if (!currentPerso) { alert('Crée un personnage d\'abord !'); return }
+  donjonActif = DONJONS.find(d => d.id === donjonId)
+  combatIndex = 0
+  lancerCombat()
+}
+
+function lancerCombat() {
+  const combat = donjonActif.combats[combatIndex]
+  const classe = CLASSES.find(c => c.id === currentPerso.classe)
+
+  // Membres du groupe ou solo
+  const membres = currentGroupe?.membres || [{ joueur_id: currentUser.id, nom: currentPerso.nom, classe: currentPerso.classe, niveau: currentPerso.niveau }]
+
+  combatState = {
+    joueurs: membres.map(m => {
+      const cl = CLASSES.find(c => c.id === m.classe)
+      return { nom: m.nom, classe: m.classe, icon: cl.icon, hp: cl.hp, hp_max: cl.hp, pa: cl.pa, pa_max: cl.pa, mort: false, joueur_id: m.joueur_id }
+    }),
+    ennemis: combat.ennemis.map(e => ({ ...e, hp_max: e.hp, mort: false })),
+    tourIndex: 0,
+    tourNum: 1,
+    phase: 'joueur', // joueur ou ennemi
+    joueurActifIndex: 0,
+  }
+
+  afficherEcran('screen-combat')
+  document.getElementById('combat-titre').textContent = `${donjonActif.icon} ${donjonActif.nom} — Combat ${combatIndex + 1}/${donjonActif.combats.length}`
+  
+  renderCombat()
+  logCombat(`⚔️ Combat ${combatIndex + 1} commence !`)
+}
+
+function renderCombat() {
+  const s = combatState
+  document.getElementById('tour-info').textContent = `Tour ${s.tourNum} — ${s.phase === 'joueur' ? '🟡 Joueurs' : '🔴 Ennemis'}`
+
+  // Ennemis
+  document.getElementById('ennemis-row').innerHTML = s.ennemis.map((e, i) => `
+    <div class="unit-card">
+      <div class="unit-sprite ${e.mort ? 'dead' : ''}" id="ennemi-sprite-${i}">${e.icon}</div>
+      <div class="unit-nom">${e.nom}</div>
+      <div class="hp-bar-wrap"><div class="hp-bar ${e.hp/e.hp_max < 0.3 ? 'low' : ''}" style="width:${Math.max(0,e.hp/e.hp_max*100)}%"></div></div>
+      <div class="hp-text">${Math.max(0,e.hp)}/${e.hp_max}</div>
+    </div>
+  `).join('')
+
+  // Joueurs
+  document.getElementById('joueurs-row').innerHTML = s.joueurs.map((j, i) => `
+    <div class="unit-card">
+      <div class="unit-sprite ${j.mort ? 'dead' : ''} ${i === s.joueurActifIndex && s.phase === 'joueur' ? 'active' : ''}" id="joueur-sprite-${i}">${j.icon}</div>
+      <div class="unit-nom">${j.nom} ${i === s.joueurActifIndex && s.phase === 'joueur' ? '<span class="tag-joueur-actif">Actif</span>' : ''}</div>
+      <div class="hp-bar-wrap"><div class="hp-bar ${j.hp/j.hp_max < 0.3 ? 'low' : ''}" style="width:${Math.max(0,j.hp/j.hp_max*100)}%"></div></div>
+      <div class="hp-text">${Math.max(0,j.hp)}/${j.hp_max}</div>
+      <div class="pa-dots">${Array(j.pa_max).fill(0).map((_,pi) => `<div class="pa-dot ${pi >= j.pa ? 'used' : ''}"></div>`).join('')}</div>
+    </div>
+  `).join('')
+
+  // Sorts
+  const joueurActif = s.joueurs[s.joueurActifIndex]
+  const classe = CLASSES.find(c => c.id === joueurActif?.classe)
+  const isMonTour = s.phase === 'joueur' && joueurActif?.joueur_id === currentUser.id
+
+  document.getElementById('sorts-label').textContent = isMonTour ? `Sorts de ${joueurActif.nom} (${joueurActif.pa} PA restants)` : s.phase === 'ennemi' ? 'Tour des ennemis...' : `Tour de ${joueurActif?.nom}...`
+
+  document.getElementById('sorts-grid').innerHTML = (classe?.sorts || []).map(sortNom => {
+    const sort = SORTS_DATA[sortNom]
+    const peutUtiliser = isMonTour && joueurActif.pa >= sort.cout
+    const dmgText = sort.soin > 0 ? `+${sort.soin} soin` : `${sort.degats[0]}-${sort.degats[1]} dmg`
+    return `
+      <button class="sort-btn" ${!peutUtiliser ? 'disabled' : ''} onclick="utiliserSort('${sortNom}')">
+        <div class="sort-nom">${sortNom}</div>
+        <div class="sort-cout">${sort.cout} PA</div>
+        <div class="sort-dmg">${dmgText}</div>
+      </button>
+    `
+  }).join('') + (isMonTour ? `<button class="btn-passer" onclick="passerTour()">Passer →</button>` : '')
+}
+
+function utiliserSort(sortNom) {
+  const s = combatState
+  const sort = SORTS_DATA[sortNom]
+  const joueur = s.joueurs[s.joueurActifIndex]
+
+  joueur.pa -= sort.cout
+
+  if (sort.cible === 'ennemi') {
+    // Cible le premier ennemi vivant
+    const cible = s.ennemis.find(e => !e.mort)
+    if (!cible) return
+    const degats = sort.degats[0] + Math.floor(Math.random() * (sort.degats[1] - sort.degats[0] + 1))
+    cible.hp -= degats
+    if (cible.hp <= 0) { cible.hp = 0; cible.mort = true }
+    logCombat(`⚔️ <span>${joueur.nom}</span> utilise <span>${sortNom}</span> → <span style="color:#cc5555">${degats} dégâts</span> sur ${cible.nom} !`)
+    animerHit(`ennemi-sprite-${s.ennemis.indexOf(cible)}`)
+    animerAttack(`joueur-sprite-${s.joueurActifIndex}`)
+  } else {
+    // Soin sur joueur avec le moins de HP
+    const cible = s.joueurs.filter(j => !j.mort).sort((a,b) => a.hp - b.hp)[0]
+    cible.hp = Math.min(cible.hp_max, cible.hp + sort.soin)
+    logCombat(`💊 <span>${joueur.nom}</span> utilise <span>${sortNom}</span> → <span style="color:#44cc44">+${sort.soin} HP</span> sur ${cible.nom} !`)
+  }
+
+  renderCombat()
+  verifierFinCombat()
+}
+
+function passerTour() {
+  const s = combatState
+  const joueur = s.joueurs[s.joueurActifIndex]
+  logCombat(`⏭️ <span>${joueur.nom}</span> passe son tour.`)
+  
+  // Prochain joueur vivant
+  let next = (s.joueurActifIndex + 1) % s.joueurs.length
+  let tries = 0
+  while (s.joueurs[next].mort && tries < s.joueurs.length) { next = (next + 1) % s.joueurs.length; tries++ }
+
+  if (next <= s.joueurActifIndex || tous_morts(s.joueurs, next)) {
+    // Tous les joueurs ont joué → tour ennemis
+    tourEnnemis()
+  } else {
+    s.joueurActifIndex = next
+    renderCombat()
+  }
+}
+
+function tous_morts(liste, exceptIndex) {
+  return liste.every((u, i) => u.mort || i === exceptIndex)
+}
+
+async function tourEnnemis() {
+  const s = combatState
+  s.phase = 'ennemi'
+  renderCombat()
+
+  for (const ennemi of s.ennemis) {
+    if (ennemi.mort) continue
+    await attendre(800)
+
+    const cible = s.joueurs.filter(j => !j.mort)[Math.floor(Math.random() * s.joueurs.filter(j => !j.mort).length)]
+    if (!cible) break
+
+    const degats = ennemi.degats[0] + Math.floor(Math.random() * (ennemi.degats[1] - ennemi.degats[0] + 1))
+    cible.hp -= degats
+    if (cible.hp <= 0) { cible.hp = 0; cible.mort = true }
+
+    logCombat(`💢 <span>${ennemi.nom}</span> attaque <span>${cible.nom}</span> → <span style="color:#cc5555">${degats} dégâts</span> !`)
+    animerHit(`joueur-sprite-${s.joueurs.indexOf(cible)}`)
+    renderCombat()
+
+    if (verifierFinCombat()) return
+  }
+
+  await attendre(600)
+  nouveauTourJoueurs()
+}
+
+function nouveauTourJoueurs() {
+  const s = combatState
+  s.phase = 'joueur'
+  s.tourNum++
+  s.joueurs.forEach(j => { if (!j.mort) j.pa = j.pa_max })
+  s.joueurActifIndex = s.joueurs.findIndex(j => !j.mort)
+  logCombat(`🔄 Tour ${s.tourNum} — C'est à votre tour !`)
+  renderCombat()
+}
+
+function verifierFinCombat() {
+  const s = combatState
+  const tousEnnemisM = s.ennemis.every(e => e.mort)
+  const tousJoueursM = s.joueurs.every(j => j.mort)
+
+  if (tousEnnemisM) {
+    setTimeout(() => victoire(), 500)
+    return true
+  }
+  if (tousJoueursM) {
+    setTimeout(() => defaite(), 500)
+    return true
+  }
+  return false
+}
+
+async function victoire() {
+  combatIndex++
+  if (combatIndex >= donjonActif.combats.length) {
+    // Donjon terminé !
+    const r = donjonActif.recompense
+    const kamas = r.kamas[0] + Math.floor(Math.random() * (r.kamas[1] - r.kamas[0]))
+    const item = r.items[Math.floor(Math.random() * r.items.length)]
+
+    // Mettre à jour en DB
+    await sb.from('joueurs').update({ kamas: sb.rpc('increment', { x: kamas }) }).eq('id', currentUser.id)
+    
+    afficherRecompense(donjonActif.nom, kamas, r.xp, item, true)
+  } else {
+    // Combat suivant
+    afficherRecompense(`Combat ${combatIndex}/${donjonActif.combats.length} terminé !`, 0, 100, null, false)
+  }
+}
+
+function defaite() {
+  afficherEcran('screen-recompense')
+  document.getElementById('recomp-titre').textContent = '💀 Défaite...'
+  document.getElementById('recomp-sous-titre').textContent = 'Votre groupe a été vaincu !'
+  document.getElementById('recomp-items').innerHTML = `<div style="color:#888;font-size:14px">Retentez votre chance !</div>`
+  document.querySelector('#screen-recompense .btn-gold').textContent = 'Réessayer'
+}
+
+function afficherRecompense(titre, kamas, xp, item, donjonFini) {
+  afficherEcran('screen-recompense')
+  document.getElementById('recomp-titre').textContent = donjonFini ? '🏆 Donjon Terminé !' : '⚔️ Combat Gagné !'
+  document.getElementById('recomp-sous-titre').textContent = titre
+  document.getElementById('recomp-items').innerHTML = `
+    ${kamas > 0 ? `<div class="recompense-item"><div class="ri-icon">💰</div><div class="ri-val">+${kamas}</div><div class="ri-label">Kamas</div></div>` : ''}
+    <div class="recompense-item"><div class="ri-icon">⭐</div><div class="ri-val">+${xp}</div><div class="ri-label">XP</div></div>
+    ${item ? `<div class="recompense-item"><div class="ri-icon">🎁</div><div class="ri-val">${item}</div><div class="ri-label">Butin</div></div>` : ''}
+  `
+  document.querySelector('#screen-recompense .btn-gold').textContent = donjonFini ? 'Retour au lobby' : 'Combat suivant'
+}
+
+function continuerDonjon() {
+  if (combatIndex >= donjonActif.combats.length) {
+    allerLobby()
+  } else {
+    lancerCombat()
+  }
+}
+
+function allerLobby() {
+  afficherLobby()
+}
+
+// ══════════════════════════════════════════════
+//  UTILITAIRES
+// ══════════════════════════════════════════════
+function afficherEcran(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.getElementById(id).classList.add('active')
+}
+
+function logCombat(html) {
+  document.getElementById('combat-log-text').innerHTML = html
+}
+
+function animerHit(id) {
+  const el = document.getElementById(id)
+  if (!el) return
+  el.classList.add('hit')
+  setTimeout(() => el.classList.remove('hit'), 400)
+}
+
+function animerAttack(id) {
+  const el = document.getElementById(id)
+  if (!el) return
+  el.classList.add('attack')
+  setTimeout(() => el.classList.remove('attack'), 300)
+}
+
+function attendre(ms) {
+  return new Promise(r => setTimeout(r, ms))
+}
+
+// ══════════════════════════════════════════════
+//  DÉMARRAGE
+// ══════════════════════════════════════════════
+initDB()
+</script>
+</body>
+</html>
