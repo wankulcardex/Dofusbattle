@@ -1370,15 +1370,54 @@ const CLASS_SPRITE = {
   9:  'cra',
 };
 
-// Infos des animations par état
-const ANIM_INFO = {
-  staticfight: { frames: 8,  w: 61,  h: 139, fps: 8  },
-  attaque:     { frames: 60, w: 160, h: 211, fps: 24 },
-  boost:       { frames: 51, w: 168, h: 148, fps: 24 },
-  hurt:        { frames: 39, w: 183, h: 214, fps: 24 },
-  die:         { frames: 56, w: 161, h: 209, fps: 24 },
-  characterstatic: { frames: 1, w: 67, h: 125, fps: 1 },
+// Infos des animations par classe
+const CLASS_ANIM_INFO = {
+  cra: {
+    staticfight:     { frames: 8,  fps: 8  },
+    attaque:         { frames: 60, fps: 24 },
+    boost:           { frames: 51, fps: 24 },
+    hurt:            { frames: 39, fps: 24 },
+    die:             { frames: 56, fps: 24 },
+    characterstatic: { frames: 1,  fps: 1  },
+  },
+  eca: {
+    static:          { frames: 1,  fps: 1  },
+    attaque:         { frames: 84, fps: 24 },
+    boost:           { frames: 60, fps: 24 },
+    hurt:            { frames: 36, fps: 24 },
+    die:             { frames: 17, fps: 24 },
+    characterstatic: { frames: 8,  fps: 8  },
+  },
+  eni: {
+    staticfight:     { frames: 8,  fps: 8  },
+    attaque:         { frames: 63, fps: 24 },
+    boost:           { frames: 96, fps: 24 },
+    hurt:            { frames: 36, fps: 24 },
+    die:             { frames: 45, fps: 24 },
+    characterstatic: { frames: 1,  fps: 1  },
+  },
+  iop: {
+    staticfight:     { frames: 8,  fps: 8  },
+    attaque:         { frames: 54, fps: 24 },
+    boost:           { frames: 57, fps: 24 },
+    hurt:            { frames: 36, fps: 24 },
+    die:             { frames: 54, fps: 24 },
+    characterstatic: { frames: 1,  fps: 1  },
+  },
 };
+
+// Animations monstres Piou
+const MONSTER_ANIM_INFO = {
+  piou: {
+    staticfight: { frames: 18, fps: 8  },
+    attaque:     { frames: 30, fps: 24 },
+    hurt:        { frames: 39, fps: 24 },
+    die:         { frames: 78, fps: 24 },
+  },
+};
+
+// Fallback
+const ANIM_INFO = CLASS_ANIM_INFO.cra;
 
 // Taille fixe du conteneur sprite en combat (pour éviter les sautillements)
 const SPRITE_CONTAINER_W = 210;
@@ -1386,11 +1425,13 @@ const SPRITE_CONTAINER_H = 220;
 
 // Gestionnaire d'animations PNG
 class SpriteAnimator {
-  constructor(el, spritePath, availableAnims) {
+  constructor(el, spritePath, animInfo) {
     this.el = el;
     this.spritePath = spritePath;
-    this.availableAnims = availableAnims;
-    this.currentAnim = 'staticfight';
+    this.animInfo = animInfo; // objet { animName: { frames, fps } }
+    // idle = première anim dispo parmi staticfight / static
+    this.idleAnim = animInfo['staticfight'] ? 'staticfight' : (animInfo['static'] ? 'static' : Object.keys(animInfo)[0]);
+    this.currentAnim = this.idleAnim;
     this.currentFrame = 1;
     this.timer = null;
     this.img = document.createElement('img');
@@ -1403,13 +1444,13 @@ class SpriteAnimator {
     `;
     this.el.innerHTML = '';
     this.el.appendChild(this.img);
-    this.play('staticfight');
+    this.play(this.idleAnim);
   }
 
   play(animName, onEnd = null) {
-    const anim = ANIM_INFO[animName];
-    if (!anim || !this.availableAnims.includes(animName)) {
-      if (animName !== 'staticfight') this.play('staticfight');
+    const anim = this.animInfo[animName];
+    if (!anim) {
+      if (animName !== this.idleAnim) this.play(this.idleAnim);
       return;
     }
     if (this.timer) clearInterval(this.timer);
@@ -1436,8 +1477,8 @@ class SpriteAnimator {
     }, 1000 / anim.fps);
   }
 
-  playOnce(animName, then = 'staticfight') {
-    this.play(animName, () => this.play(then));
+  playOnce(animName, then = null) {
+    this.play(animName, () => this.play(then || this.idleAnim));
   }
 
   _updateFrame() {
@@ -1459,9 +1500,6 @@ function getMonsterSpritePath(gfxId) {
 }
 
 // Animations disponibles pour chaque classe (on commence avec cra)
-const CLASS_ANIMS = ['staticfight', 'attaque', 'boost', 'hurt', 'die', 'characterstatic'];
-const MONSTER_ANIMS = ['staticfight', 'attaque', 'hurt', 'die'];
-
 // Registry des animateurs actifs
 let animators = {};
 
@@ -1890,8 +1928,10 @@ function startDungeon(dungeonIndex) {
   // Sprite joueur
   const playerSpriteEl = document.getElementById('player-sprite');
   playerSpriteEl.innerHTML = '';
+  const folder = CLASS_SPRITE[state.player.class_id] || 'cra';
   const spritePath = getSpritePath(state.player.class_id);
-  animators['player'] = new SpriteAnimator(playerSpriteEl, spritePath, CLASS_ANIMS);
+  const animInfo = CLASS_ANIM_INFO[folder] || CLASS_ANIM_INFO.cra;
+  animators['player'] = new SpriteAnimator(playerSpriteEl, spritePath, animInfo);
 
   document.getElementById('player-fight-name').textContent = state.player.name;
 
@@ -1925,9 +1965,17 @@ function renderCombat() {
       spriteWrap.title = `Attaquer ${m.name}`;
       spriteWrap.onclick = () => attackMonster(i);
 
-      // Pour l'instant emoji si pas de sprite monstre
-      const cls = getClass(state.player.class_id);
-      spriteWrap.innerHTML = `<span style="font-size:80px">${m.icon || '👾'}</span>`;
+      // Sprite monstre
+      const monsterFolder = m.gfx === 1212 ? 'piou' : null;
+      if (monsterFolder && MONSTER_ANIM_INFO[monsterFolder]) {
+        const monsterPath = `${SPRITES_BASE}${monsterFolder}/`;
+        const monsterAnimInfo = MONSTER_ANIM_INFO[monsterFolder];
+        setTimeout(() => {
+          animators[`monster_${i}`] = new SpriteAnimator(spriteWrap, monsterPath, monsterAnimInfo);
+        }, 50);
+      } else {
+        spriteWrap.innerHTML = `<span style="font-size:80px">${m.icon || '👾'}</span>`;
+      }
 
       const infoDiv = document.createElement('div');
       infoDiv.innerHTML = `
@@ -2049,10 +2097,19 @@ function attackMonsterWithSpell(idx, spell) {
     setTimeout(() => sprite?.classList.remove('attacking'), 500);
   }
 
-  // Animation hurt monstre
+  // Animation hurt/die monstre
   const monsterEl = document.getElementById(`monster-sprite-${idx}`);
-  monsterEl?.classList.add('hit');
-  setTimeout(() => monsterEl?.classList.remove('hit'), 400);
+  const monsterAnim = animators[`monster_${idx}`];
+  if (monsterAnim) {
+    if (monster.currentHp <= 0) {
+      monsterAnim.play('die');
+    } else {
+      monsterAnim.playOnce('hurt');
+    }
+  } else {
+    monsterEl?.classList.add('hit');
+    setTimeout(() => monsterEl?.classList.remove('hit'), 400);
+  }
 
   showFloatingNumber(monsterEl, dmg, isCrit ? 'crit' : '');
 
