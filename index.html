@@ -1404,16 +1404,27 @@ function createRufflePlayer(swfUrl, width = 120, height = 120) {
   }
   const player = ruffle.createPlayer();
   player.style.cssText = `width:${width}px;height:${height}px;`;
-  // Charge le SWF après insertion dans le DOM
   setTimeout(() => {
     player.load({ 
       url: swfUrl, 
       backgroundColor: '#00000000',
       scale: 'showAll',
       allowScriptAccess: 'never',
-      wmode: 'transparent'
+      wmode: 'transparent',
+      // Redirige les dépendances vers le bon dossier asset/
+      base: ASSET_BASE,
+      URLRewrite: [
+        // accessories.swf
+        { from: 'clips/sprites/accessories/accessories.swf', to: `${ASSET_BASE}accessories/accessories.swf` },
+        { from: 'clips/sprites/accessories/accessories_autres.swf', to: `${ASSET_BASE}accessories/accessories_autres.swf` },
+        { from: 'clips/sprites/accessories/a1.swf', to: `${ASSET_BASE}accessories/a1.swf` },
+        { from: 'clips/sprites/accessories/a2.swf', to: `${ASSET_BASE}accessories/a2.swf` },
+        { from: 'clips/sprites/accessories/a3.swf', to: `${ASSET_BASE}accessories/a3.swf` },
+        { from: 'clips/sprites/accessories/a4.swf', to: `${ASSET_BASE}accessories/a4.swf` },
+        { from: 'clips/sprites/accessories/a5.swf', to: `${ASSET_BASE}accessories/a5.swf` },
+      ]
     });
-  }, 100);
+  }, 200);
   return player;
 }
 
