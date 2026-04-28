@@ -1412,16 +1412,14 @@ function createRufflePlayer(swfUrl, width = 120, height = 120) {
       allowScriptAccess: 'never',
       wmode: 'transparent',
       // Redirige les dépendances vers le bon dossier asset/
-      base: ASSET_BASE,
       URLRewrite: [
-        // accessories.swf
-        { from: 'clips/sprites/accessories/accessories.swf', to: `${ASSET_BASE}accessories/accessories.swf` },
-        { from: 'clips/sprites/accessories/accessories_autres.swf', to: `${ASSET_BASE}accessories/accessories_autres.swf` },
-        { from: 'clips/sprites/accessories/a1.swf', to: `${ASSET_BASE}accessories/a1.swf` },
-        { from: 'clips/sprites/accessories/a2.swf', to: `${ASSET_BASE}accessories/a2.swf` },
-        { from: 'clips/sprites/accessories/a3.swf', to: `${ASSET_BASE}accessories/a3.swf` },
-        { from: 'clips/sprites/accessories/a4.swf', to: `${ASSET_BASE}accessories/a4.swf` },
-        { from: 'clips/sprites/accessories/a5.swf', to: `${ASSET_BASE}accessories/a5.swf` },
+        { from: '.*accessories/accessories\\.swf.*', to: `${ASSET_BASE}accessories/accessories.swf` },
+        { from: '.*accessories/accessories_autres\\.swf.*', to: `${ASSET_BASE}accessories/accessories_autres.swf` },
+        { from: '.*accessories/a1\\.swf.*', to: `${ASSET_BASE}accessories/a1.swf` },
+        { from: '.*accessories/a2\\.swf.*', to: `${ASSET_BASE}accessories/a2.swf` },
+        { from: '.*accessories/a3\\.swf.*', to: `${ASSET_BASE}accessories/a3.swf` },
+        { from: '.*accessories/a4\\.swf.*', to: `${ASSET_BASE}accessories/a4.swf` },
+        { from: '.*accessories/a5\\.swf.*', to: `${ASSET_BASE}accessories/a5.swf` },
       ]
     });
   }, 200);
