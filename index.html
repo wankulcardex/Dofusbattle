@@ -1403,8 +1403,17 @@ function createRufflePlayer(swfUrl, width = 120, height = 120) {
     return div;
   }
   const player = ruffle.createPlayer();
-  player.style.cssText = `width:${width}px;height:${height}px;background:transparent`;
-  player.load({ url: swfUrl, backgroundColor: '#00000000', scale: 'showAll', allowScriptAccess: 'never' });
+  player.style.cssText = `width:${width}px;height:${height}px;`;
+  // Charge le SWF après insertion dans le DOM
+  setTimeout(() => {
+    player.load({ 
+      url: swfUrl, 
+      backgroundColor: '#00000000',
+      scale: 'showAll',
+      allowScriptAccess: 'never',
+      wmode: 'transparent'
+    });
+  }, 100);
   return player;
 }
 
