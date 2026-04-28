@@ -1585,138 +1585,416 @@ const PIOU_VARIANTS = [
   { name: 'Piou Rose',   filter: 'hue-rotate(230deg) saturate(1.8) brightness(1.1)' },
 ];
 
-// Génère les salles d'un donjon
-// rooms: tableau de tableaux de monstres par salle
 const DUNGEONS = [
-  {
-    id: 1, name: 'Donjon des Piou', icon: '🐦',
-    desc: '5 salles de Piou de plus en plus nombreux',
-    minLevel: 1, itemLevelMin: 1, itemLevelMax: 15,
-    rooms: [
-      // Salle 1 : 1 Piou
-      [ {gfx:1212, hp:25, pa:5, dmg:[2,6], piouVariant:0} ],
-      // Salle 2 : 2 Piou
-      [ {gfx:1212, hp:25, pa:5, dmg:[2,6], piouVariant:1},
-        {gfx:1212, hp:25, pa:5, dmg:[2,6], piouVariant:2} ],
-      // Salle 3 : 2 Piou + 1 plus fort
-      [ {gfx:1212, hp:25, pa:5, dmg:[2,6], piouVariant:0},
-        {gfx:1212, hp:28, pa:5, dmg:[3,7], piouVariant:3},
-        {gfx:1212, hp:25, pa:5, dmg:[2,6], piouVariant:4} ],
-      // Salle 4 : 3 Piou forts
-      [ {gfx:1212, hp:30, pa:6, dmg:[3,8], piouVariant:1},
-        {gfx:1212, hp:30, pa:6, dmg:[3,8], piouVariant:5},
-        {gfx:1212, hp:30, pa:6, dmg:[3,8], piouVariant:2},
-        {gfx:1212, hp:28, pa:5, dmg:[2,7], piouVariant:3} ],
-      // Salle 5 (boss) : 4 Piou dont un Piou Royal
-      [ {gfx:1212, hp:30, pa:6, dmg:[3,8], piouVariant:0},
-        {gfx:1212, hp:30, pa:6, dmg:[3,8], piouVariant:1},
-        {gfx:1212, hp:35, pa:6, dmg:[4,9], piouVariant:3, name:'Piou Royal'},
-        {gfx:1212, hp:30, pa:6, dmg:[3,8], piouVariant:5} ],
+  // niv 1 - inventé pour le jeu (pas dans Dofus Rétro)
+  { id:1, name:'Donjon des Piou', icon:'🐦', desc:'Les Piou défendent leur nid coloré', minLevel:1, itemLevelMin:1, itemLevelMax:15,
+    rooms:[
+      [ {gfx:1212,hp:25,pa:5,dmg:[2,6],piouVariant:0} ],
+      [ {gfx:1212,hp:25,pa:5,dmg:[2,6],piouVariant:1},{gfx:1212,hp:25,pa:5,dmg:[2,6],piouVariant:2} ],
+      [ {gfx:1212,hp:25,pa:5,dmg:[2,6],piouVariant:0},{gfx:1212,hp:28,pa:5,dmg:[3,7],piouVariant:3},{gfx:1212,hp:25,pa:5,dmg:[2,6],piouVariant:4} ],
+      [ {gfx:1212,hp:30,pa:6,dmg:[3,8],piouVariant:1},{gfx:1212,hp:30,pa:6,dmg:[3,8],piouVariant:5},{gfx:1212,hp:28,pa:5,dmg:[2,7],piouVariant:3},{gfx:1212,hp:30,pa:6,dmg:[3,8],piouVariant:2} ],
+      [ {gfx:1212,hp:30,pa:6,dmg:[3,8],piouVariant:0},{gfx:1212,hp:30,pa:6,dmg:[3,8],piouVariant:1},{name:'Piou Royal',gfx:1212,hp:55,pa:7,dmg:[6,13],piouVariant:3},{gfx:1212,hp:30,pa:6,dmg:[3,8],piouVariant:5} ],
     ]
   },
-  {
-    id: 2, name: 'Donjon des Larves', icon: '🐛',
-    desc: 'Les larves défendent leur cocon',
-    minLevel: 2, itemLevelMin: 5, itemLevelMax: 20,
-    rooms: [
-      [ {name:'Larve Bleue',  gfx:1563, hp:45, pa:5, dmg:[4,10]} ],
-      [ {name:'Larve Bleue',  gfx:1563, hp:45, pa:5, dmg:[4,10]},
-        {name:'Larve Verte',  gfx:1568, hp:50, pa:6, dmg:[5,11]} ],
-      [ {name:'Larve Bleue',  gfx:1563, hp:45, pa:5, dmg:[4,10]},
-        {name:'Larve Verte',  gfx:1568, hp:50, pa:6, dmg:[5,11]},
-        {name:'Larve Orange', gfx:1563, hp:55, pa:6, dmg:[5,12]} ],
-      [ {name:'Larve Bleue',  gfx:1563, hp:50, pa:5, dmg:[5,11]},
-        {name:'Larve Verte',  gfx:1568, hp:55, pa:6, dmg:[5,12]},
-        {name:'Larve Orange', gfx:1563, hp:55, pa:6, dmg:[5,12]},
-        {name:'Larve Verte',  gfx:1568, hp:50, pa:6, dmg:[5,11]} ],
-      [ {name:'Larve Bleue',  gfx:1563, hp:50, pa:5, dmg:[5,11]},
-        {name:'Larve Verte',  gfx:1568, hp:60, pa:6, dmg:[6,14]},
-        {name:'Shin Larve',   gfx:1563, hp:80, pa:7, dmg:[8,16]},
-        {name:'Larve Orange', gfx:1563, hp:55, pa:6, dmg:[5,12]} ],
+  // niv 10 - Donjon d'Incarnam (boss: Milimilou)
+  { id:2, name:"Donjon d'Incarnam", icon:'🏰', desc:'Milimilou garde les secrets de Incarnam — niv. 10', minLevel:10, itemLevelMin:1, itemLevelMax:18,
+    rooms:[
+      [ {name:'Larve Bleue',gfx:1563,hp:40,pa:4,dmg:[2,6]},{name:'Larve Verte',gfx:1568,hp:45,pa:4,dmg:[3,7]} ],
+      [ {name:'Larve Bleue',gfx:1563,hp:42,pa:4,dmg:[2,6]},{name:'Larve Orange',gfx:1563,hp:48,pa:5,dmg:[3,8]},{name:'Larve Verte',gfx:1568,hp:46,pa:4,dmg:[3,7]} ],
+      [ {name:'Larve Verte',gfx:1568,hp:48,pa:4,dmg:[3,7]},{name:'Larve Orange',gfx:1563,hp:50,pa:5,dmg:[3,8]},{name:'Larve Bleue',gfx:1563,hp:44,pa:4,dmg:[2,7]},{name:'Larve Orange',gfx:1563,hp:50,pa:5,dmg:[3,8]} ],
+      [ {name:'Larve Orange',gfx:1563,hp:52,pa:5,dmg:[4,8]},{name:'Larve Verte',gfx:1568,hp:50,pa:4,dmg:[3,8]},{name:'Larve Bleue',gfx:1563,hp:46,pa:4,dmg:[3,7]},{name:'Larve Orange',gfx:1563,hp:52,pa:5,dmg:[4,8]} ],
+      [ {name:'Larve Verte',gfx:1568,hp:52,pa:4,dmg:[3,8]},{name:'Larve Orange',gfx:1563,hp:54,pa:5,dmg:[4,9]},{name:'Milimilou',gfx:1563,hp:180,pa:8,dmg:[12,22]},{name:'Larve Bleue',gfx:1563,hp:48,pa:4,dmg:[3,7]} ],
     ]
   },
-  {
-    id: 3, name: 'Donjon des Bouftous', icon: '🐂',
-    desc: 'Le troupeau est en colère',
-    minLevel: 5, itemLevelMin: 10, itemLevelMax: 25,
-    rooms: [
-      [ {name:'Bouftou',       gfx:1566, hp:80,  pa:6, dmg:[6,14]} ],
-      [ {name:'Bouftou',       gfx:1566, hp:80,  pa:6, dmg:[6,14]},
-        {name:'Boufton Blanc', gfx:1566, hp:90,  pa:6, dmg:[7,15]} ],
-      [ {name:'Bouftou',       gfx:1566, hp:80,  pa:6, dmg:[6,14]},
-        {name:'Boufton Blanc', gfx:1566, hp:90,  pa:6, dmg:[7,15]},
-        {name:'Bouftou Royal', gfx:1566, hp:130, pa:7, dmg:[10,20]} ],
-      [ {name:'Bouftou',       gfx:1566, hp:90,  pa:6, dmg:[7,15]},
-        {name:'Boufton Blanc', gfx:1566, hp:90,  pa:6, dmg:[7,15]},
-        {name:'Bouftou Royal', gfx:1566, hp:130, pa:7, dmg:[10,20]},
-        {name:'Bouftou Royal', gfx:1566, hp:130, pa:7, dmg:[10,20]} ],
-      [ {name:'Bouftou',       gfx:1566, hp:90,  pa:6, dmg:[7,15]},
-        {name:'Bouftou Royal', gfx:1566, hp:140, pa:7, dmg:[11,21]},
-        {name:'Chef Bouftou',  gfx:1566, hp:200, pa:8, dmg:[14,24]},
-        {name:'Bouftou Royal', gfx:1566, hp:140, pa:7, dmg:[11,21]} ],
+  // niv 20 - Donjon Ensablé (boss: Mob l'Éponge)
+  { id:3, name:'Donjon Ensablé', icon:'🏜️', desc:'une éponge piège les aventuriers — niv. 20', minLevel:20, itemLevelMin:10, itemLevelMax:30,
+    rooms:[
+      [ {name:'Champ Champ',gfx:1100,hp:80,pa:5,dmg:[5,11]},{name:'Champ Champ',gfx:1100,hp:80,pa:5,dmg:[5,11]} ],
+      [ {name:'Champ Champ',gfx:1100,hp:85,pa:5,dmg:[5,12]},{name:'Champ Champ Affamé',gfx:1101,hp:100,pa:6,dmg:[6,13]},{name:'Champ Champ',gfx:1100,hp:85,pa:5,dmg:[5,12]} ],
+      [ {name:'Champ Champ Affamé',gfx:1101,hp:105,pa:6,dmg:[6,14]},{name:'Champ Champ',gfx:1100,hp:88,pa:5,dmg:[5,12]},{name:'Champ Champ Affamé',gfx:1101,hp:105,pa:6,dmg:[6,14]},{name:'Champ Champ',gfx:1100,hp:88,pa:5,dmg:[5,12]} ],
+      [ {name:'Champ Champ Affamé',gfx:1101,hp:110,pa:6,dmg:[7,14]},{name:'Champ Champ',gfx:1100,hp:92,pa:5,dmg:[6,13]},{name:'Raul Mops',gfx:1102,hp:150,pa:7,dmg:[9,18]},{name:'Champ Champ Affamé',gfx:1101,hp:110,pa:6,dmg:[7,14]} ],
+      [ {name:'Champ Champ Affamé',gfx:1101,hp:115,pa:6,dmg:[7,15]},{name:'Raul Mops',gfx:1102,hp:160,pa:7,dmg:[10,19]},{name:'Mob Éponge',gfx:1103,hp:350,pa:9,dmg:[20,38]},{name:'Raul Mops',gfx:1102,hp:160,pa:7,dmg:[10,19]} ],
     ]
   },
-  {
-    id: 4, name: 'Donjon des Blops', icon: '🫧',
-    desc: 'Les blops envahissent la région',
-    minLevel: 10, itemLevelMin: 20, itemLevelMax: 40,
-    rooms: [
-      [ {name:'Blop Indigo', gfx:1103, hp:110, pa:6, dmg:[8,16]} ],
-      [ {name:'Blop Indigo', gfx:1103, hp:110, pa:6, dmg:[8,16]},
-        {name:'Blop Cerise', gfx:1103, hp:120, pa:6, dmg:[9,17]} ],
-      [ {name:'Blop Indigo', gfx:1103, hp:110, pa:6, dmg:[8,16]},
-        {name:'Blop Cerise', gfx:1103, hp:120, pa:6, dmg:[9,17]},
-        {name:'Blop Coco',   gfx:1103, hp:115, pa:6, dmg:[8,17]} ],
-      [ {name:'Blop Indigo', gfx:1103, hp:120, pa:7, dmg:[9,17]},
-        {name:'Blop Cerise', gfx:1103, hp:120, pa:7, dmg:[9,17]},
-        {name:'Blop Coco',   gfx:1103, hp:120, pa:7, dmg:[9,17]},
-        {name:'Blop Royal',  gfx:1103, hp:180, pa:8, dmg:[13,24]} ],
-      [ {name:'Blop Cerise', gfx:1103, hp:130, pa:7, dmg:[10,18]},
-        {name:'Blop Indigo', gfx:1103, hp:130, pa:7, dmg:[10,18]},
-        {name:'Blop Royal',  gfx:1103, hp:200, pa:8, dmg:[14,26]},
-        {name:'Blop Royal',  gfx:1103, hp:200, pa:8, dmg:[14,26]} ],
+  // niv 20 - Donjon des Champs (boss: Tournesol Affamé)
+  { id:4, name:'Donjon des Champs', icon:'🌾', desc:'Le Tournesol Affamé terrorise les paysans — niv. 20', minLevel:20, itemLevelMin:10, itemLevelMax:30,
+    rooms:[
+      [ {name:'Pissenlit Diabolique',gfx:1215,hp:90,pa:5,dmg:[5,12]},{name:'Rose Démoniaque',gfx:1213,hp:95,pa:5,dmg:[5,13]} ],
+      [ {name:'Tournesol Sauvage',gfx:1214,hp:100,pa:5,dmg:[6,13]},{name:'Pissenlit Diabolique',gfx:1215,hp:93,pa:5,dmg:[5,12]},{name:'Rose Démoniaque',gfx:1213,hp:98,pa:5,dmg:[6,13]} ],
+      [ {name:'Tournesol Sauvage',gfx:1214,hp:105,pa:5,dmg:[6,14]},{name:'Tournesol Affamé',gfx:1214,hp:130,pa:6,dmg:[8,16]},{name:'Pissenlit Diabolique',gfx:1215,hp:96,pa:5,dmg:[6,13]} ],
+      [ {name:'Tournesol Affamé',gfx:1214,hp:135,pa:6,dmg:[8,17]},{name:'Rose Démoniaque',gfx:1213,hp:102,pa:5,dmg:[6,14]},{name:'Tournesol Affamé',gfx:1214,hp:135,pa:6,dmg:[8,17]},{name:'Pissenlit Diabolique',gfx:1215,hp:99,pa:5,dmg:[6,13]} ],
+      [ {name:'Tournesol Affamé',gfx:1214,hp:140,pa:6,dmg:[9,18]},{name:'Rose Démoniaque',gfx:1213,hp:106,pa:5,dmg:[7,14]},{name:'Tournesol Affamé Boss',gfx:1214,hp:400,pa:9,dmg:[22,40]},{name:'Pissenlit Diabolique',gfx:1215,hp:102,pa:5,dmg:[6,14]} ],
     ]
   },
-  {
-    id: 5, name: 'Donjon des Craqueleurs', icon: '🪨',
-    desc: 'Méfiez-vous de leur cuirasse',
-    minLevel: 20, itemLevelMin: 35, itemLevelMax: 55,
-    rooms: [
-      [ {name:'Craqueleur',       gfx:1156, hp:220, pa:7, dmg:[12,24]} ],
-      [ {name:'Craqueleur',       gfx:1156, hp:220, pa:7, dmg:[12,24]},
-        {name:'Craqueleur',       gfx:1156, hp:220, pa:7, dmg:[12,24]} ],
-      [ {name:'Craqueleur',       gfx:1156, hp:220, pa:7, dmg:[12,24]},
-        {name:'Craqueleur',       gfx:1156, hp:220, pa:7, dmg:[12,24]},
-        {name:'Grand Craqueleur', gfx:1156, hp:350, pa:9, dmg:[18,32]} ],
-      [ {name:'Craqueleur',       gfx:1156, hp:240, pa:7, dmg:[13,25]},
-        {name:'Grand Craqueleur', gfx:1156, hp:360, pa:9, dmg:[18,32]},
-        {name:'Grand Craqueleur', gfx:1156, hp:360, pa:9, dmg:[18,32]},
-        {name:'Craqueleur',       gfx:1156, hp:240, pa:7, dmg:[13,25]} ],
-      [ {name:'Craqueleur',       gfx:1156, hp:250, pa:7, dmg:[13,26]},
-        {name:'Grand Craqueleur', gfx:1156, hp:380, pa:9, dmg:[20,36]},
-        {name:'Craquebosse',      gfx:1156, hp:500, pa:10,dmg:[25,45]},
-        {name:'Grand Craqueleur', gfx:1156, hp:380, pa:9, dmg:[20,36]} ],
+  // niv 25 - Donjon des Bouftous (boss: Bouftou Royal)
+  { id:5, name:'Donjon des Bouftous', icon:'🐂', desc:'Le Bouftou Royal mène le troupeau — niv. 25', minLevel:25, itemLevelMin:15, itemLevelMax:35,
+    rooms:[
+      [ {name:'Bouftou',gfx:1566,hp:120,pa:6,dmg:[7,15]} ],
+      [ {name:'Bouftou',gfx:1566,hp:120,pa:6,dmg:[7,15]},{name:'Boufton Blanc',gfx:1566,hp:135,pa:6,dmg:[8,16]} ],
+      [ {name:'Bouftou',gfx:1566,hp:125,pa:6,dmg:[7,16]},{name:'Boufton Blanc',gfx:1566,hp:140,pa:6,dmg:[8,17]},{name:'Chef de Guerre Bouftou',gfx:1566,hp:180,pa:7,dmg:[11,21]} ],
+      [ {name:'Boufton Blanc',gfx:1566,hp:145,pa:6,dmg:[9,17]},{name:'Chef de Guerre Bouftou',gfx:1566,hp:188,pa:7,dmg:[12,22]},{name:'Chef de Guerre Bouftou',gfx:1566,hp:188,pa:7,dmg:[12,22]},{name:'Bouftou',gfx:1566,hp:130,pa:6,dmg:[8,16]} ],
+      [ {name:'Chef de Guerre Bouftou',gfx:1566,hp:195,pa:7,dmg:[12,23]},{name:'Boufton Blanc',gfx:1566,hp:150,pa:6,dmg:[9,18]},{name:'Bouftou Royal',gfx:1566,hp:550,pa:9,dmg:[28,50]},{name:'Chef de Guerre Bouftou',gfx:1566,hp:195,pa:7,dmg:[12,23]} ],
     ]
   },
-  {
-    id: 6, name: 'Donjon des Tofus', icon: '🦃',
-    desc: 'Les Tofus protègent leurs œufs',
-    minLevel: 30, itemLevelMin: 50, itemLevelMax: 70,
-    rooms: [
-      [ {name:'Tofu',       gfx:1198, hp:160, pa:6, dmg:[10,20]} ],
-      [ {name:'Tofu',       gfx:1198, hp:160, pa:6, dmg:[10,20]},
-        {name:'Tofu',       gfx:1198, hp:160, pa:6, dmg:[10,20]} ],
-      [ {name:'Tofu',       gfx:1198, hp:160, pa:6, dmg:[10,20]},
-        {name:'Batofu',     gfx:1198, hp:200, pa:7, dmg:[13,24]},
-        {name:'Tofu',       gfx:1198, hp:160, pa:6, dmg:[10,20]} ],
-      [ {name:'Tofu',       gfx:1198, hp:170, pa:6, dmg:[11,21]},
-        {name:'Batofu',     gfx:1198, hp:210, pa:7, dmg:[14,25]},
-        {name:'Batofu',     gfx:1198, hp:210, pa:7, dmg:[14,25]},
-        {name:'Tofu',       gfx:1198, hp:170, pa:6, dmg:[11,21]} ],
-      [ {name:'Tofu',       gfx:1198, hp:180, pa:6, dmg:[11,22]},
-        {name:'Batofu',     gfx:1198, hp:220, pa:7, dmg:[14,26]},
-        {name:'Tofu Royal', gfx:1198, hp:400, pa:9, dmg:[20,38]},
-        {name:'Batofu',     gfx:1198, hp:220, pa:7, dmg:[14,26]} ],
+  // niv 40 - Donjon des Tofus (boss: Batofu)
+  { id:6, name:'Donjon des Tofus', icon:'🐔', desc:'Le Batofu protège les œufs — niv. 40', minLevel:40, itemLevelMin:28, itemLevelMax:52,
+    rooms:[
+      [ {name:'Tofu',gfx:1198,hp:200,pa:6,dmg:[11,21]},{name:'Tofu Maléfique',gfx:1198,hp:220,pa:6,dmg:[12,23]} ],
+      [ {name:'Tofu',gfx:1198,hp:205,pa:6,dmg:[11,22]},{name:'Tofu Maléfique',gfx:1198,hp:225,pa:6,dmg:[12,23]},{name:'Tofu',gfx:1198,hp:205,pa:6,dmg:[11,22]} ],
+      [ {name:'Tofu Maléfique',gfx:1198,hp:230,pa:6,dmg:[13,24]},{name:'Tofu',gfx:1198,hp:210,pa:6,dmg:[12,22]},{name:'Batofu',gfx:1198,hp:280,pa:7,dmg:[16,29]},{name:'Tofu Maléfique',gfx:1198,hp:230,pa:6,dmg:[13,24]} ],
+      [ {name:'Batofu',gfx:1198,hp:290,pa:7,dmg:[16,30]},{name:'Tofu Maléfique',gfx:1198,hp:235,pa:6,dmg:[13,25]},{name:'Batofu',gfx:1198,hp:290,pa:7,dmg:[16,30]},{name:'Tofu',gfx:1198,hp:215,pa:6,dmg:[12,23]} ],
+      [ {name:'Batofu',gfx:1198,hp:300,pa:7,dmg:[17,31]},{name:'Tofu Maléfique',gfx:1198,hp:240,pa:6,dmg:[13,25]},{name:'Batofu Boss',gfx:1198,hp:700,pa:10,dmg:[38,68]},{name:'Batofu',gfx:1198,hp:300,pa:7,dmg:[17,31]} ],
+    ]
+  },
+  // niv 40 - Donjon des Squelettes (boss: Chafer)
+  { id:7, name:'Donjon des Squelettes', icon:'💀', desc:'Le Chafer commande les morts — niv. 40', minLevel:40, itemLevelMin:28, itemLevelMax:52,
+    rooms:[
+      [ {name:'Chafer',gfx:1020,hp:220,pa:6,dmg:[12,23]},{name:'Chafer Fantassin',gfx:1021,hp:240,pa:6,dmg:[13,25]} ],
+      [ {name:'Chafer',gfx:1020,hp:225,pa:6,dmg:[13,24]},{name:'Chafer Lancier',gfx:1022,hp:260,pa:7,dmg:[15,27]},{name:'Chafer Fantassin',gfx:1021,hp:245,pa:6,dmg:[13,25]} ],
+      [ {name:'Chafer Lancier',gfx:1022,hp:268,pa:7,dmg:[15,28]},{name:'Chafer',gfx:1020,hp:230,pa:6,dmg:[13,24]},{name:'Chafer Archer',gfx:1023,hp:255,pa:6,dmg:[14,26]},{name:'Chafer Fantassin',gfx:1021,hp:250,pa:6,dmg:[14,26]} ],
+      [ {name:'Chafer Archer',gfx:1023,hp:262,pa:6,dmg:[14,27]},{name:'Chafer Lancier',gfx:1022,hp:275,pa:7,dmg:[16,29]},{name:'Chafer Inquisiteur',gfx:1024,hp:295,pa:7,dmg:[17,31]},{name:'Chafer',gfx:1020,hp:235,pa:6,dmg:[13,25]} ],
+      [ {name:'Chafer Archer',gfx:1023,hp:268,pa:6,dmg:[15,27]},{name:'Chafer Inquisiteur',gfx:1024,hp:302,pa:7,dmg:[17,32]},{name:'Chafer Enragé',gfx:1025,hp:750,pa:10,dmg:[40,72]},{name:'Chafer Lancier',gfx:1022,hp:282,pa:7,dmg:[16,30]} ],
+    ]
+  },
+  // niv 50 - Donjon Forgeron (boss: Coffre des Forgerons)
+  { id:8, name:'Donjon des Forgerons', icon:'⚒️', desc:'Le Coffre des Forgerons cache de grands trésors — niv. 50', minLevel:50, itemLevelMin:38, itemLevelMax:62,
+    rooms:[
+      [ {name:'Mineur Sombre',gfx:1051,hp:320,pa:6,dmg:[18,32]},{name:'Forgeron Sombre',gfx:1050,hp:340,pa:7,dmg:[19,34]} ],
+      [ {name:'Forgeron Sombre',gfx:1050,hp:348,pa:7,dmg:[20,35]},{name:'Boulanger Sombre',gfx:1052,hp:300,pa:6,dmg:[17,30]},{name:'Mineur Sombre',gfx:1051,hp:328,pa:6,dmg:[18,33]} ],
+      [ {name:'Bandit Roublard',gfx:1053,hp:360,pa:7,dmg:[20,37]},{name:'Forgeron Sombre',gfx:1050,hp:356,pa:7,dmg:[20,36]},{name:'Mineur Sombre',gfx:1051,hp:336,pa:6,dmg:[19,34]},{name:'Boulanger Sombre',gfx:1052,hp:308,pa:6,dmg:[17,31]} ],
+      [ {name:'Forgeron Sombre',gfx:1050,hp:364,pa:7,dmg:[21,37]},{name:'Bandit Roublard',gfx:1053,hp:368,pa:7,dmg:[21,38]},{name:'Bandit Roublard',gfx:1053,hp:368,pa:7,dmg:[21,38]},{name:'Mineur Sombre',gfx:1051,hp:344,pa:6,dmg:[19,35]} ],
+      [ {name:'Mineur Sombre',gfx:1051,hp:352,pa:6,dmg:[20,35]},{name:'Bandit Roublard',gfx:1053,hp:376,pa:7,dmg:[21,39]},{name:'Coffre des Forgerons',gfx:1050,hp:1200,pa:11,dmg:[58,100]},{name:'Forgeron Sombre',gfx:1050,hp:372,pa:7,dmg:[21,38]} ],
+    ]
+  },
+  // niv 60 - Donjon des Bulbes (boss: Bulbig) - Pandala
+  { id:9, name:'Donjon des Bulbes', icon:'🌱', desc:'Le Bulbig domine la forêt de Pandala — niv. 60', minLevel:60, itemLevelMin:48, itemLevelMax:72,
+    rooms:[
+      [ {name:'Bulbuisson',gfx:1030,hp:240,pa:6,dmg:[13,25]},{name:'Bulbiflore',gfx:1031,hp:255,pa:6,dmg:[14,26]} ],
+      [ {name:'Bulbuisson',gfx:1030,hp:248,pa:6,dmg:[13,26]},{name:'Bulbambou',gfx:1032,hp:270,pa:7,dmg:[15,28]},{name:'Bulbiflore',gfx:1031,hp:262,pa:6,dmg:[14,27]} ],
+      [ {name:'Bulbambou',gfx:1032,hp:278,pa:7,dmg:[15,29]},{name:'Bulbuisson',gfx:1030,hp:255,pa:6,dmg:[14,26]},{name:'Bulbambou',gfx:1032,hp:278,pa:7,dmg:[15,29]},{name:'Bulbiflore',gfx:1031,hp:268,pa:6,dmg:[15,27]} ],
+      [ {name:'Bulbambou',gfx:1032,hp:286,pa:7,dmg:[16,30]},{name:'Bulbiflore',gfx:1031,hp:275,pa:6,dmg:[15,28]},{name:'Bulbambou',gfx:1032,hp:286,pa:7,dmg:[16,30]},{name:'Bulbuisson',gfx:1030,hp:262,pa:6,dmg:[14,27]} ],
+      [ {name:'Bulbambou',gfx:1032,hp:294,pa:7,dmg:[16,31]},{name:'Bulbiflore',gfx:1031,hp:282,pa:6,dmg:[15,28]},{name:'Bulbig',gfx:1033,hp:900,pa:11,dmg:[48,85]},{name:'Bulbuisson',gfx:1030,hp:268,pa:6,dmg:[14,27]} ],
+    ]
+  },
+  // niv 50 - Donjon des Scarafeuilles (boss: Scarabosse Doré)
+  { id:10, name:'Donjon des Scarafeuilles', icon:'🌿', desc:'Le Scarabosse Doré protège la forêt — niv. 50', minLevel:50, itemLevelMin:38, itemLevelMax:62,
+    rooms:[
+      [ {name:'Scarafeuille Vert',gfx:1160,hp:380,pa:7,dmg:[21,38]},{name:'Scarafeuille Bleu',gfx:1161,hp:390,pa:7,dmg:[21,39]} ],
+      [ {name:'Scarafeuille Vert',gfx:1160,hp:388,pa:7,dmg:[21,39]},{name:'Scarafeuille Rouge',gfx:1162,hp:400,pa:7,dmg:[22,40]},{name:'Scarafeuille Bleu',gfx:1161,hp:395,pa:7,dmg:[22,39]} ],
+      [ {name:'Scarafeuille Rouge',gfx:1162,hp:408,pa:7,dmg:[22,41]},{name:'Scarafeuille Blanc',gfx:1163,hp:415,pa:7,dmg:[23,41]},{name:'Scarafeuille Vert',gfx:1160,hp:395,pa:7,dmg:[22,40]},{name:'Scarafeuille Bleu',gfx:1161,hp:402,pa:7,dmg:[22,40]} ],
+      [ {name:'Scarafeuille Noir',gfx:1164,hp:450,pa:8,dmg:[25,44]},{name:'Scarafeuille Blanc',gfx:1163,hp:422,pa:7,dmg:[23,42]},{name:'Scarafeuille Rouge',gfx:1162,hp:415,pa:7,dmg:[23,41]},{name:'Scarafeuille Noir',gfx:1164,hp:450,pa:8,dmg:[25,44]} ],
+      [ {name:'Scarafeuille Noir',gfx:1164,hp:458,pa:8,dmg:[25,45]},{name:'Scarafeuille Blanc',gfx:1163,hp:429,pa:7,dmg:[24,42]},{name:'Scarabosse Doré',gfx:1165,hp:1400,pa:12,dmg:[72,125]},{name:'Scarafeuille Noir',gfx:1164,hp:458,pa:8,dmg:[25,45]} ],
+    ]
+  },
+  // niv 50 - Donjon des Bworks (boss: Bworkette)
+  { id:11, name:'Donjon des Bworks', icon:'👺', desc:'La Bworkette commande les Bworks — niv. 50', minLevel:50, itemLevelMin:38, itemLevelMax:62,
+    rooms:[
+      [ {name:'Bwork Mage',gfx:1040,hp:360,pa:7,dmg:[20,36]},{name:'Bwork Archer',gfx:1041,hp:340,pa:6,dmg:[19,34]} ],
+      [ {name:'Bwork Mage',gfx:1040,hp:368,pa:7,dmg:[20,37]},{name:'Bwork Archer',gfx:1041,hp:348,pa:6,dmg:[19,35]},{name:'Bwork Mage',gfx:1040,hp:368,pa:7,dmg:[20,37]} ],
+      [ {name:'Bwork Archer',gfx:1041,hp:356,pa:6,dmg:[20,35]},{name:'Bwork Mage',gfx:1040,hp:376,pa:7,dmg:[21,38]},{name:'Bwork Archer',gfx:1041,hp:356,pa:6,dmg:[20,35]},{name:'Bwork Mage',gfx:1040,hp:376,pa:7,dmg:[21,38]} ],
+      [ {name:'Bwork Archer',gfx:1041,hp:364,pa:6,dmg:[20,36]},{name:'Bwork Mage',gfx:1040,hp:384,pa:7,dmg:[21,39]},{name:'Bwork Archer',gfx:1041,hp:364,pa:6,dmg:[20,36]},{name:'Bwork Mage',gfx:1040,hp:384,pa:7,dmg:[21,39]} ],
+      [ {name:'Bwork Archer',gfx:1041,hp:372,pa:6,dmg:[21,37]},{name:'Bwork Mage',gfx:1040,hp:392,pa:7,dmg:[22,39]},{name:'Bworkette',gfx:1042,hp:1100,pa:11,dmg:[56,98]},{name:'Bwork Archer',gfx:1041,hp:372,pa:6,dmg:[21,37]} ],
+    ]
+  },
+  // niv 60 - Donjon des Larves (boss: Shin Larve)
+  { id:12, name:'Donjon des Larves', icon:'🐛', desc:'La Shin Larve garde le cocon sacré — niv. 60', minLevel:60, itemLevelMin:48, itemLevelMax:72,
+    rooms:[
+      [ {name:'Larve Bleue',gfx:1563,hp:480,pa:6,dmg:[26,47]},{name:'Larve Verte',gfx:1568,hp:500,pa:6,dmg:[27,49]} ],
+      [ {name:'Larve Bleue',gfx:1563,hp:490,pa:6,dmg:[26,48]},{name:'Larve Orange',gfx:1563,hp:520,pa:7,dmg:[28,51]},{name:'Larve Verte',gfx:1568,hp:510,pa:6,dmg:[27,50]} ],
+      [ {name:'Larve Verte',gfx:1568,hp:518,pa:6,dmg:[28,50]},{name:'Larve Orange',gfx:1563,hp:528,pa:7,dmg:[28,52]},{name:'Larve Bleue',gfx:1563,hp:498,pa:6,dmg:[27,48]},{name:'Larve Orange',gfx:1563,hp:528,pa:7,dmg:[28,52]} ],
+      [ {name:'Larve Orange',gfx:1563,hp:536,pa:7,dmg:[29,52]},{name:'Larve Verte',gfx:1568,hp:526,pa:6,dmg:[28,51]},{name:'Larve Bleue',gfx:1563,hp:506,pa:6,dmg:[27,49]},{name:'Larve Orange',gfx:1563,hp:536,pa:7,dmg:[29,52]} ],
+      [ {name:'Larve Verte',gfx:1568,hp:534,pa:6,dmg:[29,52]},{name:'Larve Orange',gfx:1563,hp:544,pa:7,dmg:[29,53]},{name:'Shin Larve',gfx:1563,hp:1200,pa:11,dmg:[62,108]},{name:'Larve Bleue',gfx:1563,hp:514,pa:6,dmg:[28,50]} ],
+    ]
+  },
+  // niv 60 - Donjon des Blops (boss: Blops Royaux)
+  { id:13, name:'Donjon des Blops', icon:'💧', desc:'Les Blops Royaux défendent leur territoire — niv. 60', minLevel:60, itemLevelMin:48, itemLevelMax:72,
+    rooms:[
+      [ {name:'Blop Indigo',gfx:1103,hp:490,pa:7,dmg:[26,47]},{name:'Blop Coco',gfx:1103,hp:500,pa:7,dmg:[27,48]} ],
+      [ {name:'Blop Griotte',gfx:1103,hp:505,pa:7,dmg:[27,49]},{name:'Blop Indigo',gfx:1103,hp:495,pa:7,dmg:[27,48]},{name:'Blop Reinette',gfx:1103,hp:498,pa:7,dmg:[27,48]} ],
+      [ {name:'Blop Coco',gfx:1103,hp:510,pa:7,dmg:[27,49]},{name:'Biblop Indigo',gfx:1103,hp:620,pa:8,dmg:[33,60]},{name:'Blop Griotte',gfx:1103,hp:510,pa:7,dmg:[27,49]},{name:'Blop Reinette',gfx:1103,hp:505,pa:7,dmg:[27,49]} ],
+      [ {name:'Biblop Coco',gfx:1103,hp:630,pa:8,dmg:[34,61]},{name:'Biblop Griotte',gfx:1103,hp:638,pa:8,dmg:[34,62]},{name:'Blop Indigo',gfx:1103,hp:518,pa:7,dmg:[28,50]},{name:'Biblop Reinette',gfx:1103,hp:625,pa:8,dmg:[34,61]} ],
+      [ {name:'Biblop Coco',gfx:1103,hp:646,pa:8,dmg:[35,62]},{name:'Biblop Griotte',gfx:1103,hp:652,pa:8,dmg:[35,63]},{name:'Blop Indigo Royal',gfx:1103,hp:2000,pa:12,dmg:[85,148]},{name:'Biblop Reinette',gfx:1103,hp:640,pa:8,dmg:[34,62]} ],
+    ]
+  },
+  // niv 60 - Grotte Hesque (boss: Corailleur Magistral) - Otomaï
+  { id:14, name:'Grotte Hesque', icon:'🪸', desc:'Le Corailleur Magistral réinitialise vos stats — niv. 60', minLevel:60, itemLevelMin:48, itemLevelMax:72,
+    rooms:[
+      [ {name:'Corailleur',gfx:1600,hp:460,pa:7,dmg:[25,45]},{name:'Corailleur',gfx:1600,hp:460,pa:7,dmg:[25,45]} ],
+      [ {name:'Corailleur',gfx:1600,hp:468,pa:7,dmg:[25,46]},{name:'Corailleur Sombre',gfx:1601,hp:510,pa:8,dmg:[27,50]},{name:'Corailleur',gfx:1600,hp:468,pa:7,dmg:[25,46]} ],
+      [ {name:'Corailleur Sombre',gfx:1601,hp:518,pa:8,dmg:[28,51]},{name:'Corailleur',gfx:1600,hp:476,pa:7,dmg:[26,46]},{name:'Corailleur Sombre',gfx:1601,hp:518,pa:8,dmg:[28,51]},{name:'Corailleur',gfx:1600,hp:476,pa:7,dmg:[26,46]} ],
+      [ {name:'Corailleur Sombre',gfx:1601,hp:526,pa:8,dmg:[28,52]},{name:'Corailleur',gfx:1600,hp:484,pa:7,dmg:[26,47]},{name:'Corailleur Sombre',gfx:1601,hp:526,pa:8,dmg:[28,52]},{name:'Corailleur Sombre',gfx:1601,hp:526,pa:8,dmg:[28,52]} ],
+      [ {name:'Corailleur Sombre',gfx:1601,hp:534,pa:8,dmg:[29,53]},{name:'Corailleur',gfx:1600,hp:492,pa:7,dmg:[26,47]},{name:'Corailleur Magistral',gfx:1602,hp:1800,pa:14,dmg:[88,152]},{name:'Corailleur Sombre',gfx:1601,hp:534,pa:8,dmg:[29,53]} ],
+    ]
+  },
+  // niv 60 - Donjon de Nowel (boss: Sapik)
+  { id:15, name:'Donjon de Nowel', icon:'🎄', desc:'Sapik répand la terreur à Nowel — niv. 60', minLevel:60, itemLevelMin:48, itemLevelMax:72,
+    rooms:[
+      [ {name:'Lutin de Nowel',gfx:1070,hp:450,pa:7,dmg:[24,44]},{name:'Lutin de Nowel',gfx:1070,hp:450,pa:7,dmg:[24,44]} ],
+      [ {name:'Lutin de Nowel',gfx:1070,hp:458,pa:7,dmg:[25,44]},{name:'Lutin Sombre',gfx:1071,hp:490,pa:7,dmg:[26,47]},{name:'Lutin de Nowel',gfx:1070,hp:458,pa:7,dmg:[25,44]} ],
+      [ {name:'Lutin Sombre',gfx:1071,hp:498,pa:7,dmg:[27,48]},{name:'Lutin de Nowel',gfx:1070,hp:466,pa:7,dmg:[25,45]},{name:'Lutin Sombre',gfx:1071,hp:498,pa:7,dmg:[27,48]},{name:'Lutin de Nowel',gfx:1070,hp:466,pa:7,dmg:[25,45]} ],
+      [ {name:'Lutin Sombre',gfx:1071,hp:506,pa:7,dmg:[27,49]},{name:'Lutin de Nowel',gfx:1070,hp:474,pa:7,dmg:[25,46]},{name:'Lutin Sombre',gfx:1071,hp:506,pa:7,dmg:[27,49]},{name:'Lutin Sombre',gfx:1071,hp:506,pa:7,dmg:[27,49]} ],
+      [ {name:'Lutin Sombre',gfx:1071,hp:514,pa:7,dmg:[28,50]},{name:'Lutin de Nowel',gfx:1070,hp:482,pa:7,dmg:[26,46]},{name:'Sapik',gfx:1072,hp:1600,pa:12,dmg:[78,136]},{name:'Lutin Sombre',gfx:1071,hp:514,pa:7,dmg:[28,50]} ],
+    ]
+  },
+  // niv 90 - Donjon des Abraknydes (boss: Abraknyde Ancestral)
+  { id:16, name:'Donjon des Abraknydes', icon:'🕷️', desc:"L'Abraknyde Ancestral invoque ses araignées — niv. 90", minLevel:90, itemLevelMin:78, itemLevelMax:102,
+    rooms:[
+      [ {name:'Abraknyde',gfx:1010,hp:780,pa:7,dmg:[41,73]},{name:'Arakne',gfx:1011,hp:750,pa:6,dmg:[40,70]} ],
+      [ {name:'Abraknyde',gfx:1010,hp:792,pa:7,dmg:[42,74]},{name:'Arakne',gfx:1011,hp:762,pa:6,dmg:[40,71]},{name:'Abraknyde',gfx:1010,hp:792,pa:7,dmg:[42,74]} ],
+      [ {name:'Arakne',gfx:1011,hp:774,pa:6,dmg:[41,72]},{name:'Abraknyde',gfx:1010,hp:804,pa:7,dmg:[42,75]},{name:'Araknotron',gfx:1012,hp:840,pa:7,dmg:[44,78]},{name:'Arakne',gfx:1011,hp:774,pa:6,dmg:[41,72]} ],
+      [ {name:'Araknotron',gfx:1012,hp:852,pa:7,dmg:[45,79]},{name:'Abraknyde',gfx:1010,hp:816,pa:7,dmg:[43,76]},{name:'Araknotron',gfx:1012,hp:852,pa:7,dmg:[45,79]},{name:'Arakne',gfx:1011,hp:786,pa:6,dmg:[41,73]} ],
+      [ {name:'Araknotron',gfx:1012,hp:864,pa:7,dmg:[45,80]},{name:'Abraknyde',gfx:1010,hp:828,pa:7,dmg:[43,77]},{name:'Abraknyde Ancestral',gfx:1013,hp:2500,pa:12,dmg:[110,190]},{name:'Araknotron',gfx:1012,hp:864,pa:7,dmg:[45,80]} ],
+    ]
+  },
+  // niv 90 - Arche d'Otomaï (boss: Gourlo le Terrible)
+  { id:17, name:"Arche d'Otomaï", icon:'⚓', desc:"Gourlo le Terrible garde l'arche — niv. 90", minLevel:90, itemLevelMin:78, itemLevelMax:102,
+    rooms:[
+      [ {name:'Dragon Cochon',gfx:1403,hp:820,pa:8,dmg:[43,76]},{name:'Dragon Cochon',gfx:1403,hp:820,pa:8,dmg:[43,76]} ],
+      [ {name:'Dragon Cochon',gfx:1403,hp:836,pa:8,dmg:[44,77]},{name:'Dragon Cochon',gfx:1403,hp:836,pa:8,dmg:[44,77]},{name:'Dragon Cochon',gfx:1403,hp:836,pa:8,dmg:[44,77]} ],
+      [ {name:'Dragon Cochon',gfx:1403,hp:852,pa:8,dmg:[44,78]},{name:'Dragon Cochon',gfx:1403,hp:852,pa:8,dmg:[44,78]},{name:'Dragon Cochon',gfx:1403,hp:852,pa:8,dmg:[44,78]},{name:'Dragon Cochon',gfx:1403,hp:852,pa:8,dmg:[44,78]} ],
+      [ {name:'Dragon Cochon',gfx:1403,hp:868,pa:8,dmg:[45,79]},{name:'Dragon Cochon',gfx:1403,hp:868,pa:8,dmg:[45,79]},{name:'Dragon Cochon',gfx:1403,hp:868,pa:8,dmg:[45,79]},{name:'Dragon Cochon',gfx:1403,hp:868,pa:8,dmg:[45,79]} ],
+      [ {name:'Dragon Cochon',gfx:1403,hp:884,pa:8,dmg:[46,81]},{name:'Dragon Cochon',gfx:1403,hp:884,pa:8,dmg:[46,81]},{name:'Gourlo le Terrible',gfx:1404,hp:4000,pa:14,dmg:[148,256]},{name:'Dragon Cochon',gfx:1403,hp:884,pa:8,dmg:[46,81]} ],
+    ]
+  },
+  // niv 100 - Donjon Canidés (boss: Meulou)
+  { id:18, name:'Donjon des Canidés', icon:'🐺', desc:'Le Meulou commande sa meute — niv. 100', minLevel:100, itemLevelMin:88, itemLevelMax:112,
+    rooms:[
+      [ {name:'Mulous',gfx:1350,hp:1000,pa:9,dmg:[52,91]},{name:'Mulous',gfx:1350,hp:1000,pa:9,dmg:[52,91]} ],
+      [ {name:'Mulous',gfx:1350,hp:1015,pa:9,dmg:[52,92]},{name:'Mulous Enragé',gfx:1351,hp:1060,pa:9,dmg:[55,95]},{name:'Mulous',gfx:1350,hp:1015,pa:9,dmg:[52,92]} ],
+      [ {name:'Mulous Enragé',gfx:1351,hp:1075,pa:9,dmg:[55,96]},{name:'Mulous',gfx:1350,hp:1030,pa:9,dmg:[53,93]},{name:'Mulous Enragé',gfx:1351,hp:1075,pa:9,dmg:[55,96]},{name:'Mulous',gfx:1350,hp:1030,pa:9,dmg:[53,93]} ],
+      [ {name:'Mulous Enragé',gfx:1351,hp:1090,pa:9,dmg:[56,97]},{name:'Mulous',gfx:1350,hp:1045,pa:9,dmg:[54,94]},{name:'Mulous Enragé',gfx:1351,hp:1090,pa:9,dmg:[56,97]},{name:'Mulous Enragé',gfx:1351,hp:1090,pa:9,dmg:[56,97]} ],
+      [ {name:'Mulous Enragé',gfx:1351,hp:1105,pa:9,dmg:[57,99]},{name:'Mulous',gfx:1350,hp:1060,pa:9,dmg:[54,95]},{name:'Meulou',gfx:1352,hp:5000,pa:14,dmg:[165,285]},{name:'Mulous Enragé',gfx:1351,hp:1105,pa:9,dmg:[57,99]} ],
+    ]
+  },
+  // niv 100 - Donjon du Koulosse
+  { id:19, name:'Donjon du Koulosse', icon:'🗿', desc:'Le Koulosse broie tout sur son passage — niv. 100', minLevel:100, itemLevelMin:88, itemLevelMax:112,
+    rooms:[
+      [ {name:'Koalak Forestier',gfx:1353,hp:980,pa:9,dmg:[51,89]},{name:'Koalak Guerrier',gfx:1354,hp:1020,pa:9,dmg:[53,93]} ],
+      [ {name:'Koalak Forestier',gfx:1353,hp:995,pa:9,dmg:[52,90]},{name:'Koalak Guerrier',gfx:1354,hp:1035,pa:9,dmg:[54,94]},{name:'Koalak Forestier',gfx:1353,hp:995,pa:9,dmg:[52,90]} ],
+      [ {name:'Koalak Guerrier',gfx:1354,hp:1050,pa:9,dmg:[54,95]},{name:'Koalak Forestier',gfx:1353,hp:1010,pa:9,dmg:[52,91]},{name:'Koalak Guerrier',gfx:1354,hp:1050,pa:9,dmg:[54,95]},{name:'Koalak Forestier',gfx:1353,hp:1010,pa:9,dmg:[52,91]} ],
+      [ {name:'Koalak Guerrier',gfx:1354,hp:1065,pa:9,dmg:[55,96]},{name:'Koalak Forestier',gfx:1353,hp:1025,pa:9,dmg:[53,92]},{name:'Koalak Guerrier',gfx:1354,hp:1065,pa:9,dmg:[55,96]},{name:'Koalak Guerrier',gfx:1354,hp:1065,pa:9,dmg:[55,96]} ],
+      [ {name:'Koalak Guerrier',gfx:1354,hp:1080,pa:9,dmg:[56,97]},{name:'Koalak Forestier',gfx:1353,hp:1040,pa:9,dmg:[54,93]},{name:'Koulosse',gfx:1355,hp:5500,pa:14,dmg:[178,308]},{name:'Koalak Guerrier',gfx:1354,hp:1080,pa:9,dmg:[56,97]} ],
+    ]
+  },
+  // niv 100 - Antre du Dragon Cochon (boss: Dragon Cochon)
+  { id:20, name:'Antre du Dragon Cochon', icon:'🐷', desc:'Le Dragon Cochon drop le Dofus Turquoise — niv. 100', minLevel:100, itemLevelMin:88, itemLevelMax:112,
+    rooms:[
+      [ {name:'Dragon Cochon',gfx:1403,hp:1050,pa:8,dmg:[54,95]},{name:'Dragon Cochon',gfx:1403,hp:1050,pa:8,dmg:[54,95]} ],
+      [ {name:'Dragon Cochon',gfx:1403,hp:1068,pa:8,dmg:[55,96]},{name:'Dragon Cochon',gfx:1403,hp:1068,pa:8,dmg:[55,96]},{name:'Dragon Cochon',gfx:1403,hp:1068,pa:8,dmg:[55,96]} ],
+      [ {name:'Dragon Cochon',gfx:1403,hp:1086,pa:8,dmg:[56,98]},{name:'Dragon Cochon',gfx:1403,hp:1086,pa:8,dmg:[56,98]},{name:'Dragon Cochon',gfx:1403,hp:1086,pa:8,dmg:[56,98]},{name:'Dragon Cochon',gfx:1403,hp:1086,pa:8,dmg:[56,98]} ],
+      [ {name:'Dragon Cochon',gfx:1403,hp:1104,pa:8,dmg:[57,99]},{name:'Dragon Cochon',gfx:1403,hp:1104,pa:8,dmg:[57,99]},{name:'Dragon Cochon',gfx:1403,hp:1104,pa:8,dmg:[57,99]},{name:'Dragon Cochon',gfx:1403,hp:1104,pa:8,dmg:[57,99]} ],
+      [ {name:'Dragon Cochon',gfx:1403,hp:1122,pa:8,dmg:[58,101]},{name:'Dragon Cochon',gfx:1403,hp:1122,pa:8,dmg:[58,101]},{name:'Dragon Cochon Boss',gfx:1403,hp:6000,pa:14,dmg:[190,330]},{name:'Dragon Cochon',gfx:1403,hp:1122,pa:8,dmg:[58,101]} ],
+    ]
+  },
+  // niv 100 - Donjon du Maitre Corbac
+  { id:21, name:'Donjon du Maître Corbac', icon:'🐦‍⬛', desc:'Maître Corbac hante sa bibliothèque — niv. 100', minLevel:100, itemLevelMin:88, itemLevelMax:112,
+    rooms:[
+      [ {name:'Corbac',gfx:1060,hp:1020,pa:9,dmg:[53,92]},{name:'Corbac',gfx:1060,hp:1020,pa:9,dmg:[53,92]} ],
+      [ {name:'Corbac',gfx:1060,hp:1035,pa:9,dmg:[54,93]},{name:'Corbac Noir',gfx:1061,hp:1080,pa:9,dmg:[56,97]},{name:'Corbac',gfx:1060,hp:1035,pa:9,dmg:[54,93]} ],
+      [ {name:'Corbac Noir',gfx:1061,hp:1095,pa:9,dmg:[57,98]},{name:'Corbac',gfx:1060,hp:1050,pa:9,dmg:[54,94]},{name:'Corbac Noir',gfx:1061,hp:1095,pa:9,dmg:[57,98]},{name:'Corbac',gfx:1060,hp:1050,pa:9,dmg:[54,94]} ],
+      [ {name:'Corbac Noir',gfx:1061,hp:1110,pa:9,dmg:[57,99]},{name:'Corbac',gfx:1060,hp:1065,pa:9,dmg:[55,95]},{name:'Corbac Noir',gfx:1061,hp:1110,pa:9,dmg:[57,99]},{name:'Corbac Noir',gfx:1061,hp:1110,pa:9,dmg:[57,99]} ],
+      [ {name:'Corbac Noir',gfx:1061,hp:1125,pa:9,dmg:[58,100]},{name:'Corbac',gfx:1060,hp:1080,pa:9,dmg:[56,96]},{name:'Maître Corbac',gfx:1062,hp:6000,pa:14,dmg:[192,332]},{name:'Corbac Noir',gfx:1061,hp:1125,pa:9,dmg:[58,100]} ],
+    ]
+  },
+  // niv 110 - Goulet du Rasboul (boss: Silf le Rasboul Majeur)
+  { id:22, name:'Goulet du Rasboul', icon:'🦎', desc:'Silf le Rasboul Majeur garde les profondeurs — niv. 110', minLevel:110, itemLevelMin:98, itemLevelMax:122,
+    rooms:[
+      [ {name:'Rasboul',gfx:1700,hp:1200,pa:9,dmg:[62,107]},{name:'Rasboul',gfx:1700,hp:1200,pa:9,dmg:[62,107]} ],
+      [ {name:'Rasboul',gfx:1700,hp:1218,pa:9,dmg:[63,109]},{name:'Rasboul Majeur',gfx:1701,hp:1280,pa:10,dmg:[66,114]},{name:'Rasboul',gfx:1700,hp:1218,pa:9,dmg:[63,109]} ],
+      [ {name:'Rasboul Majeur',gfx:1701,hp:1298,pa:10,dmg:[67,116]},{name:'Rasboul',gfx:1700,hp:1236,pa:9,dmg:[64,110]},{name:'Rasboul Majeur',gfx:1701,hp:1298,pa:10,dmg:[67,116]},{name:'Rasboul',gfx:1700,hp:1236,pa:9,dmg:[64,110]} ],
+      [ {name:'Rasboul Majeur',gfx:1701,hp:1316,pa:10,dmg:[68,117]},{name:'Rasboul',gfx:1700,hp:1254,pa:9,dmg:[65,111]},{name:'Rasboul Majeur',gfx:1701,hp:1316,pa:10,dmg:[68,117]},{name:'Rasboul Majeur',gfx:1701,hp:1316,pa:10,dmg:[68,117]} ],
+      [ {name:'Rasboul Majeur',gfx:1701,hp:1334,pa:10,dmg:[69,119]},{name:'Rasboul',gfx:1700,hp:1272,pa:9,dmg:[66,113]},{name:'Silf le Rasboul Majeur',gfx:1702,hp:8000,pa:16,dmg:[248,428]},{name:'Rasboul Majeur',gfx:1701,hp:1334,pa:10,dmg:[69,119]} ],
+    ]
+  },
+  // niv 110 - Donjon des Rats de Brâkmar (boss: Rat Noir)
+  { id:23, name:'Donjon des Rats de Brâkmar', icon:'🐀', desc:'Le Rat Noir infeste les égouts de Brâkmar — niv. 110', minLevel:110, itemLevelMin:98, itemLevelMax:122,
+    rooms:[
+      [ {name:'Rat Noir',gfx:1500,hp:1180,pa:9,dmg:[61,106]},{name:'Rat Noir',gfx:1500,hp:1180,pa:9,dmg:[61,106]} ],
+      [ {name:'Rat Noir',gfx:1500,hp:1198,pa:9,dmg:[62,107]},{name:'Rat Noir Adulte',gfx:1501,hp:1250,pa:10,dmg:[65,111]},{name:'Rat Noir',gfx:1500,hp:1198,pa:9,dmg:[62,107]} ],
+      [ {name:'Rat Noir Adulte',gfx:1501,hp:1268,pa:10,dmg:[65,113]},{name:'Rat Noir',gfx:1500,hp:1216,pa:9,dmg:[63,109]},{name:'Rat Noir Adulte',gfx:1501,hp:1268,pa:10,dmg:[65,113]},{name:'Rat Noir',gfx:1500,hp:1216,pa:9,dmg:[63,109]} ],
+      [ {name:'Rat Noir Adulte',gfx:1501,hp:1286,pa:10,dmg:[66,114]},{name:'Rat Noir',gfx:1500,hp:1234,pa:9,dmg:[64,110]},{name:'Rat Noir Adulte',gfx:1501,hp:1286,pa:10,dmg:[66,114]},{name:'Rat Noir Adulte',gfx:1501,hp:1286,pa:10,dmg:[66,114]} ],
+      [ {name:'Rat Noir Adulte',gfx:1501,hp:1304,pa:10,dmg:[67,116]},{name:'Rat Noir',gfx:1500,hp:1252,pa:9,dmg:[65,112]},{name:'Rat Noir Boss',gfx:1502,hp:7000,pa:15,dmg:[218,376]},{name:'Rat Noir Adulte',gfx:1501,hp:1304,pa:10,dmg:[67,116]} ],
+    ]
+  },
+  // niv 110 - Donjon des Rats de Bonta (boss: Rat Blanc)
+  { id:24, name:'Donjon des Rats de Bonta', icon:'🐁', desc:'Le Rat Blanc infeste les égouts de Bonta — niv. 110', minLevel:110, itemLevelMin:98, itemLevelMax:122,
+    rooms:[
+      [ {name:'Rat Blanc',gfx:1510,hp:1180,pa:9,dmg:[61,106]},{name:'Rat Blanc',gfx:1510,hp:1180,pa:9,dmg:[61,106]} ],
+      [ {name:'Rat Blanc',gfx:1510,hp:1198,pa:9,dmg:[62,107]},{name:'Rat Blanc Adulte',gfx:1511,hp:1250,pa:10,dmg:[65,111]},{name:'Rat Blanc',gfx:1510,hp:1198,pa:9,dmg:[62,107]} ],
+      [ {name:'Rat Blanc Adulte',gfx:1511,hp:1268,pa:10,dmg:[65,113]},{name:'Rat Blanc',gfx:1510,hp:1216,pa:9,dmg:[63,109]},{name:'Rat Blanc Adulte',gfx:1511,hp:1268,pa:10,dmg:[65,113]},{name:'Rat Blanc',gfx:1510,hp:1216,pa:9,dmg:[63,109]} ],
+      [ {name:'Rat Blanc Adulte',gfx:1511,hp:1286,pa:10,dmg:[66,114]},{name:'Rat Blanc',gfx:1510,hp:1234,pa:9,dmg:[64,110]},{name:'Rat Blanc Adulte',gfx:1511,hp:1286,pa:10,dmg:[66,114]},{name:'Rat Blanc Adulte',gfx:1511,hp:1286,pa:10,dmg:[66,114]} ],
+      [ {name:'Rat Blanc Adulte',gfx:1511,hp:1304,pa:10,dmg:[67,116]},{name:'Rat Blanc',gfx:1510,hp:1252,pa:9,dmg:[65,112]},{name:'Rat Blanc Boss',gfx:1512,hp:7000,pa:15,dmg:[218,376]},{name:'Rat Blanc Adulte',gfx:1511,hp:1304,pa:10,dmg:[67,116]} ],
+    ]
+  },
+  // niv 120 - Labyrinthe du Minotoror (boss: Minotoror)
+  { id:25, name:'Labyrinthe du Minotoror', icon:'🐃', desc:'Le Minotoror drop le Dofus Pourpre — niv. 120', minLevel:120, itemLevelMin:108, itemLevelMax:132,
+    rooms:[
+      [ {name:'Minotot',gfx:1300,hp:1400,pa:9,dmg:[72,125]},{name:'Minotor',gfx:1301,hp:1360,pa:9,dmg:[70,122]} ],
+      [ {name:'Minotot',gfx:1300,hp:1421,pa:9,dmg:[73,127]},{name:'Minotor',gfx:1301,hp:1381,pa:9,dmg:[71,123]},{name:'Minotot',gfx:1300,hp:1421,pa:9,dmg:[73,127]} ],
+      [ {name:'Minotor',gfx:1301,hp:1402,pa:9,dmg:[72,125]},{name:'Minotot',gfx:1300,hp:1442,pa:9,dmg:[74,128]},{name:'Minotor',gfx:1301,hp:1402,pa:9,dmg:[72,125]},{name:'Minotot',gfx:1300,hp:1442,pa:9,dmg:[74,128]} ],
+      [ {name:'Minotot',gfx:1300,hp:1463,pa:9,dmg:[75,130]},{name:'Minotor',gfx:1301,hp:1423,pa:9,dmg:[73,127]},{name:'Minotot',gfx:1300,hp:1463,pa:9,dmg:[75,130]},{name:'Minotor',gfx:1301,hp:1423,pa:9,dmg:[73,127]} ],
+      [ {name:'Minotot',gfx:1300,hp:1484,pa:9,dmg:[76,132]},{name:'Minotor',gfx:1301,hp:1444,pa:9,dmg:[74,129]},{name:'Minotoror',gfx:1302,hp:10000,pa:14,dmg:[300,520]},{name:'Minotot',gfx:1300,hp:1484,pa:9,dmg:[76,132]} ],
+    ]
+  },
+  // niv 120 - Repaire de Skeunk (boss: Skeunk)
+  { id:26, name:'Repaire de Skeunk', icon:'🦨', desc:'Le Skeunk défend son repaire — niv. 120', minLevel:120, itemLevelMin:108, itemLevelMax:132,
+    rooms:[
+      [ {name:'Koalak Forestier',gfx:1353,hp:1380,pa:9,dmg:[71,123]},{name:'Koalak Guerrier',gfx:1354,hp:1420,pa:9,dmg:[73,126]} ],
+      [ {name:'Koalak Forestier',gfx:1353,hp:1401,pa:9,dmg:[72,125]},{name:'Skeunk',gfx:1356,hp:1480,pa:9,dmg:[76,132]},{name:'Koalak Guerrier',gfx:1354,hp:1441,pa:9,dmg:[74,128]} ],
+      [ {name:'Skeunk',gfx:1356,hp:1502,pa:9,dmg:[77,134]},{name:'Koalak Guerrier',gfx:1354,hp:1462,pa:9,dmg:[75,130]},{name:'Koalak Forestier',gfx:1353,hp:1422,pa:9,dmg:[73,126]},{name:'Skeunk',gfx:1356,hp:1502,pa:9,dmg:[77,134]} ],
+      [ {name:'Skeunk',gfx:1356,hp:1524,pa:9,dmg:[78,135]},{name:'Koalak Guerrier',gfx:1354,hp:1483,pa:9,dmg:[76,131]},{name:'Skeunk',gfx:1356,hp:1524,pa:9,dmg:[78,135]},{name:'Koalak Forestier',gfx:1353,hp:1443,pa:9,dmg:[74,128]} ],
+      [ {name:'Skeunk',gfx:1356,hp:1546,pa:9,dmg:[79,137]},{name:'Koalak Guerrier',gfx:1354,hp:1504,pa:9,dmg:[77,133]},{name:'Skeunk Boss',gfx:1357,hp:9000,pa:15,dmg:[278,480]},{name:'Skeunk',gfx:1356,hp:1546,pa:9,dmg:[79,137]} ],
+    ]
+  },
+  // niv 120 - Sanctuaire des Dragoeufs (boss: Crocabulia)
+  { id:27, name:'Sanctuaire des Dragoeufs', icon:'🐊', desc:'La Crocabulia drop le Dofus Vulbis — niv. 120', minLevel:120, itemLevelMin:108, itemLevelMax:132,
+    rooms:[
+      [ {name:'Crocodaille',gfx:1250,hp:1360,pa:9,dmg:[70,121]},{name:'Crocodaille',gfx:1250,hp:1360,pa:9,dmg:[70,121]} ],
+      [ {name:'Crocodaille',gfx:1250,hp:1381,pa:9,dmg:[71,123]},{name:'Crocodaille Chasseur',gfx:1251,hp:1440,pa:9,dmg:[74,128]},{name:'Crocodaille',gfx:1250,hp:1381,pa:9,dmg:[71,123]} ],
+      [ {name:'Crocodaille Chasseur',gfx:1251,hp:1462,pa:9,dmg:[75,130]},{name:'Crocodaille',gfx:1250,hp:1402,pa:9,dmg:[72,125]},{name:'Crocodaille Chasseur',gfx:1251,hp:1462,pa:9,dmg:[75,130]},{name:'Crocodaille',gfx:1250,hp:1402,pa:9,dmg:[72,125]} ],
+      [ {name:'Crocodaille Chasseur',gfx:1251,hp:1484,pa:9,dmg:[76,132]},{name:'Crocodaille',gfx:1250,hp:1423,pa:9,dmg:[73,126]},{name:'Crocodaille Chasseur',gfx:1251,hp:1484,pa:9,dmg:[76,132]},{name:'Crocodaille Chasseur',gfx:1251,hp:1484,pa:9,dmg:[76,132]} ],
+      [ {name:'Crocodaille Chasseur',gfx:1251,hp:1506,pa:9,dmg:[77,133]},{name:'Crocodaille',gfx:1250,hp:1444,pa:9,dmg:[74,128]},{name:'Crocabulia',gfx:1252,hp:12000,pa:15,dmg:[360,620]},{name:'Crocodaille Chasseur',gfx:1251,hp:1506,pa:9,dmg:[77,133]} ],
+    ]
+  },
+  // niv 120 - Donjon du Tofu Royal (boss: Tofu Royal)
+  { id:28, name:'Donjon du Tofu Royal', icon:'👑', desc:'Le Tofu Royal est bien plus puissant — niv. 120', minLevel:120, itemLevelMin:108, itemLevelMax:132,
+    rooms:[
+      [ {name:'Batofu',gfx:1198,hp:1340,pa:9,dmg:[69,120]},{name:'Tofu Maléfique',gfx:1198,hp:1280,pa:8,dmg:[66,114]} ],
+      [ {name:'Batofu',gfx:1198,hp:1361,pa:9,dmg:[70,121]},{name:'Tofu Maléfique',gfx:1198,hp:1299,pa:8,dmg:[67,116]},{name:'Batofu',gfx:1198,hp:1361,pa:9,dmg:[70,121]} ],
+      [ {name:'Tofu Maléfique',gfx:1198,hp:1318,pa:8,dmg:[68,117]},{name:'Batofu',gfx:1198,hp:1382,pa:9,dmg:[71,123]},{name:'Tofu Maléfique',gfx:1198,hp:1318,pa:8,dmg:[68,117]},{name:'Batofu',gfx:1198,hp:1382,pa:9,dmg:[71,123]} ],
+      [ {name:'Batofu',gfx:1198,hp:1403,pa:9,dmg:[72,125]},{name:'Tofu Maléfique',gfx:1198,hp:1337,pa:8,dmg:[69,119]},{name:'Batofu',gfx:1198,hp:1403,pa:9,dmg:[72,125]},{name:'Tofu Maléfique',gfx:1198,hp:1337,pa:8,dmg:[69,119]} ],
+      [ {name:'Batofu',gfx:1198,hp:1424,pa:9,dmg:[73,126]},{name:'Tofu Maléfique',gfx:1198,hp:1356,pa:8,dmg:[70,121]},{name:'Tofu Royal',gfx:1198,hp:10000,pa:14,dmg:[305,527]},{name:'Batofu',gfx:1198,hp:1424,pa:9,dmg:[73,126]} ],
+    ]
+  },
+  // niv 130 - Donjon Fungus (boss: Ougah) - Landes Sidimote
+  // Note : niveau 190 sur dotrofus mais on met 130 pour mieux espacer
+  { id:29, name:'Donjon Fungus', icon:'🍄', desc:"Ougah, l'un des boss les plus redoutables — niv. 130", minLevel:130, itemLevelMin:118, itemLevelMax:142,
+    rooms:[
+      [ {name:'Fungus',gfx:1450,hp:1600,pa:9,dmg:[82,142]},{name:'Champignon Luidegît',gfx:1451,hp:1550,pa:9,dmg:[80,138]} ],
+      [ {name:'Fungus',gfx:1450,hp:1625,pa:9,dmg:[83,144]},{name:'Champignon Luidegît',gfx:1451,hp:1574,pa:9,dmg:[81,140]},{name:'Fungus',gfx:1450,hp:1625,pa:9,dmg:[83,144]} ],
+      [ {name:'Champignon Luidegît',gfx:1451,hp:1598,pa:9,dmg:[82,142]},{name:'Fungus Évolué',gfx:1452,hp:1700,pa:10,dmg:[87,151]},{name:'Fungus',gfx:1450,hp:1650,pa:9,dmg:[85,146]},{name:'Champignon Luidegît',gfx:1451,hp:1598,pa:9,dmg:[82,142]} ],
+      [ {name:'Fungus Évolué',gfx:1452,hp:1726,pa:10,dmg:[88,153]},{name:'Fungus',gfx:1450,hp:1675,pa:9,dmg:[86,148]},{name:'Fungus Évolué',gfx:1452,hp:1726,pa:10,dmg:[88,153]},{name:'Champignon Luidegît',gfx:1451,hp:1622,pa:9,dmg:[83,144]} ],
+      [ {name:'Fungus Évolué',gfx:1452,hp:1752,pa:10,dmg:[90,155]},{name:'Champignon Luidegît',gfx:1451,hp:1646,pa:9,dmg:[84,146]},{name:'Ougah',gfx:1453,hp:14000,pa:16,dmg:[420,726]},{name:'Fungus Évolué',gfx:1452,hp:1752,pa:10,dmg:[90,155]} ],
+    ]
+  },
+  // niv 140 - Laboratoire du Tynril (boss: Tynril)
+  { id:30, name:'Laboratoire du Tynril', icon:'❄️', desc:'Le Tynril gèle tout sur son passage — niv. 140', minLevel:140, itemLevelMin:128, itemLevelMax:152,
+    rooms:[
+      [ {name:'Tynril de Glace',gfx:1750,hp:1900,pa:10,dmg:[97,168]},{name:'Tynril de Feu',gfx:1751,hp:1940,pa:10,dmg:[99,171]} ],
+      [ {name:'Tynril de Glace',gfx:1750,hp:1929,pa:10,dmg:[99,170]},{name:'Tynril de Feu',gfx:1751,hp:1969,pa:10,dmg:[101,174]},{name:'Tynril de Glace',gfx:1750,hp:1929,pa:10,dmg:[99,170]} ],
+      [ {name:'Tynril de Feu',gfx:1751,hp:1998,pa:10,dmg:[102,177]},{name:'Tynril de Glace',gfx:1750,hp:1958,pa:10,dmg:[100,173]},{name:'Grand Tynril',gfx:1752,hp:2200,pa:11,dmg:[113,194]},{name:'Tynril de Feu',gfx:1751,hp:1998,pa:10,dmg:[102,177]} ],
+      [ {name:'Grand Tynril',gfx:1752,hp:2233,pa:11,dmg:[114,197]},{name:'Tynril de Feu',gfx:1751,hp:2027,pa:10,dmg:[104,179]},{name:'Grand Tynril',gfx:1752,hp:2233,pa:11,dmg:[114,197]},{name:'Tynril de Glace',gfx:1750,hp:1987,pa:10,dmg:[102,175]} ],
+      [ {name:'Grand Tynril',gfx:1752,hp:2266,pa:11,dmg:[116,200]},{name:'Tynril de Feu',gfx:1751,hp:2056,pa:10,dmg:[105,182]},{name:'Tynril',gfx:1753,hp:15000,pa:16,dmg:[450,777]},{name:'Grand Tynril',gfx:1752,hp:2266,pa:11,dmg:[116,200]} ],
+    ]
+  },
+  // niv 150 - Donjon du Chêne Mou (boss: Chêne Mou) - dans Abraknydes
+  { id:31, name:'Donjon du Chêne Mou', icon:'🌳', desc:'Le Chêne Mou drop le Dofus Turquoise — niv. 150', minLevel:150, itemLevelMin:138, itemLevelMax:162,
+    rooms:[
+      [ {name:'Abraknyde Sombre',gfx:1650,hp:2100,pa:11,dmg:[107,185]},{name:'Abraknyde Sombre',gfx:1650,hp:2100,pa:11,dmg:[107,185]} ],
+      [ {name:'Abraknyde Sombre',gfx:1650,hp:2132,pa:11,dmg:[109,188]},{name:'Araknotron',gfx:1012,hp:2000,pa:11,dmg:[102,177]},{name:'Abraknyde Sombre',gfx:1650,hp:2132,pa:11,dmg:[109,188]} ],
+      [ {name:'Araknotron',gfx:1012,hp:2030,pa:11,dmg:[104,180]},{name:'Abraknyde Sombre',gfx:1650,hp:2164,pa:11,dmg:[111,191]},{name:'Araknotron',gfx:1012,hp:2030,pa:11,dmg:[104,180]},{name:'Abraknyde Sombre',gfx:1650,hp:2164,pa:11,dmg:[111,191]} ],
+      [ {name:'Abraknyde Sombre',gfx:1650,hp:2196,pa:11,dmg:[112,194]},{name:'Araknotron',gfx:1012,hp:2060,pa:11,dmg:[105,182]},{name:'Abraknyde Sombre',gfx:1650,hp:2196,pa:11,dmg:[112,194]},{name:'Araknotron',gfx:1012,hp:2060,pa:11,dmg:[105,182]} ],
+      [ {name:'Abraknyde Sombre',gfx:1650,hp:2228,pa:11,dmg:[114,197]},{name:'Araknotron',gfx:1012,hp:2090,pa:11,dmg:[107,185]},{name:'Chêne Mou',gfx:1652,hp:18000,pa:17,dmg:[540,933]},{name:'Abraknyde Sombre',gfx:1650,hp:2228,pa:11,dmg:[114,197]} ],
+    ]
+  },
+  // niv 150 - Donjon des Kitsounes - Pandala (boss: Tanukouï San)
+  { id:32, name:'Donjon des Kitsounes', icon:'🦊', desc:'Tanukouï San maîtrise les arts de Pandala — niv. 150', minLevel:150, itemLevelMin:138, itemLevelMax:162,
+    rooms:[
+      [ {name:'Kitsoune',gfx:1800,hp:2080,pa:11,dmg:[106,184]},{name:'Kitsoune',gfx:1800,hp:2080,pa:11,dmg:[106,184]} ],
+      [ {name:'Kitsoune',gfx:1800,hp:2112,pa:11,dmg:[108,186]},{name:'Kitsoune Noir',gfx:1801,hp:2160,pa:11,dmg:[110,191]},{name:'Kitsoune',gfx:1800,hp:2112,pa:11,dmg:[108,186]} ],
+      [ {name:'Kitsoune Noir',gfx:1801,hp:2193,pa:11,dmg:[112,194]},{name:'Kitsoune',gfx:1800,hp:2144,pa:11,dmg:[109,189]},{name:'Kitsoune Noir',gfx:1801,hp:2193,pa:11,dmg:[112,194]},{name:'Kitsoune',gfx:1800,hp:2144,pa:11,dmg:[109,189]} ],
+      [ {name:'Kitsoune Noir',gfx:1801,hp:2226,pa:11,dmg:[114,197]},{name:'Kitsoune',gfx:1800,hp:2176,pa:11,dmg:[111,192]},{name:'Kitsoune Noir',gfx:1801,hp:2226,pa:11,dmg:[114,197]},{name:'Kitsoune Noir',gfx:1801,hp:2226,pa:11,dmg:[114,197]} ],
+      [ {name:'Kitsoune Noir',gfx:1801,hp:2259,pa:11,dmg:[115,200]},{name:'Kitsoune',gfx:1800,hp:2208,pa:11,dmg:[113,195]},{name:'Tanukouï San',gfx:1802,hp:18000,pa:17,dmg:[540,933]},{name:'Kitsoune Noir',gfx:1801,hp:2259,pa:11,dmg:[115,200]} ],
+    ]
+  },
+  // niv 160 - Donjon des Rats du Château d'Amakna (boss: Sphincter Cell)
+  { id:33, name:"Donjon des Rats du Château d'Amakna", icon:'🏰', desc:'Sphincter Cell hante le château — niv. 160', minLevel:160, itemLevelMin:148, itemLevelMax:172,
+    rooms:[
+      [ {name:'Rat de Château',gfx:1520,hp:2400,pa:11,dmg:[122,211]},{name:'Rat de Château',gfx:1520,hp:2400,pa:11,dmg:[122,211]} ],
+      [ {name:'Rat de Château',gfx:1520,hp:2436,pa:11,dmg:[124,215]},{name:'Rat Sombre',gfx:1521,hp:2500,pa:11,dmg:[128,221]},{name:'Rat de Château',gfx:1520,hp:2436,pa:11,dmg:[124,215]} ],
+      [ {name:'Rat Sombre',gfx:1521,hp:2538,pa:11,dmg:[130,224]},{name:'Rat de Château',gfx:1520,hp:2472,pa:11,dmg:[126,218]},{name:'Rat Sombre',gfx:1521,hp:2538,pa:11,dmg:[130,224]},{name:'Rat de Château',gfx:1520,hp:2472,pa:11,dmg:[126,218]} ],
+      [ {name:'Rat Sombre',gfx:1521,hp:2576,pa:11,dmg:[131,227]},{name:'Rat de Château',gfx:1520,hp:2508,pa:11,dmg:[128,221]},{name:'Rat Sombre',gfx:1521,hp:2576,pa:11,dmg:[131,227]},{name:'Rat Sombre',gfx:1521,hp:2576,pa:11,dmg:[131,227]} ],
+      [ {name:'Rat Sombre',gfx:1521,hp:2614,pa:11,dmg:[133,230]},{name:'Rat de Château',gfx:1520,hp:2544,pa:11,dmg:[130,224]},{name:'Sphincter Cell',gfx:1522,hp:22000,pa:18,dmg:[655,1131]},{name:'Rat Sombre',gfx:1521,hp:2614,pa:11,dmg:[133,230]} ],
+    ]
+  },
+  // niv 160 - Château Wa Wabbit (boss: Wa Wabbit)
+  { id:34, name:'Château des Wabbits', icon:'🐰', desc:'Le Wa Wabbit règne sur son château maudit — niv. 160', minLevel:160, itemLevelMin:148, itemLevelMax:172,
+    rooms:[
+      [ {name:'Wabbit',gfx:1200,hp:2380,pa:11,dmg:[121,210]},{name:'Wabbit Squelette',gfx:1203,hp:2440,pa:11,dmg:[124,215]} ],
+      [ {name:'Wabbit',gfx:1200,hp:2416,pa:11,dmg:[123,213]},{name:'Black Tiwabbit',gfx:1202,hp:2360,pa:11,dmg:[120,208]},{name:'Wabbit Squelette',gfx:1203,hp:2477,pa:11,dmg:[126,218]} ],
+      [ {name:'Wabbit Squelette',gfx:1203,hp:2514,pa:11,dmg:[128,221]},{name:'Black Tiwabbit',gfx:1202,hp:2395,pa:11,dmg:[122,211]},{name:'Wabbit',gfx:1200,hp:2452,pa:11,dmg:[125,216]},{name:'Wabbit Squelette',gfx:1203,hp:2514,pa:11,dmg:[128,221]} ],
+      [ {name:'Wabbit Squelette',gfx:1203,hp:2551,pa:11,dmg:[130,224]},{name:'Black Tiwabbit',gfx:1202,hp:2430,pa:11,dmg:[124,214]},{name:'Wabbit Squelette',gfx:1203,hp:2551,pa:11,dmg:[130,224]},{name:'Wabbit',gfx:1200,hp:2488,pa:11,dmg:[127,219]} ],
+      [ {name:'Wabbit Squelette',gfx:1203,hp:2588,pa:11,dmg:[132,228]},{name:'Black Tiwabbit',gfx:1202,hp:2465,pa:11,dmg:[126,217]},{name:'Wa Wabbit',gfx:1204,hp:25000,pa:18,dmg:[742,1281]},{name:'Wabbit Squelette',gfx:1203,hp:2588,pa:11,dmg:[132,228]} ],
+    ]
+  },
+  // niv 170 - Canopée du Kimbo (boss: Kimbo)
+  { id:35, name:'Canopée du Kimbo', icon:'🐒', desc:'Le Kimbo domine la jungle — niv. 170', minLevel:170, itemLevelMin:158, itemLevelMax:182,
+    rooms:[
+      [ {name:'Kimbo',gfx:1850,hp:2700,pa:11,dmg:[137,238]},{name:'Kimbo Guerrier',gfx:1851,hp:2800,pa:11,dmg:[142,246]} ],
+      [ {name:'Kimbo',gfx:1850,hp:2741,pa:11,dmg:[140,241]},{name:'Kimbo Guerrier',gfx:1851,hp:2842,pa:11,dmg:[145,250]},{name:'Kimbo',gfx:1850,hp:2741,pa:11,dmg:[140,241]} ],
+      [ {name:'Kimbo Guerrier',gfx:1851,hp:2884,pa:11,dmg:[147,254]},{name:'Kimbo',gfx:1850,hp:2782,pa:11,dmg:[142,245]},{name:'Kimbo Guerrier',gfx:1851,hp:2884,pa:11,dmg:[147,254]},{name:'Kimbo',gfx:1850,hp:2782,pa:11,dmg:[142,245]} ],
+      [ {name:'Kimbo Guerrier',gfx:1851,hp:2926,pa:11,dmg:[149,258]},{name:'Kimbo',gfx:1850,hp:2823,pa:11,dmg:[144,248]},{name:'Kimbo Guerrier',gfx:1851,hp:2926,pa:11,dmg:[149,258]},{name:'Kimbo Guerrier',gfx:1851,hp:2926,pa:11,dmg:[149,258]} ],
+      [ {name:'Kimbo Guerrier',gfx:1851,hp:2968,pa:11,dmg:[151,262]},{name:'Kimbo',gfx:1850,hp:2864,pa:11,dmg:[146,252]},{name:'Kimbo Boss',gfx:1852,hp:28000,pa:18,dmg:[826,1427]},{name:'Kimbo Guerrier',gfx:1851,hp:2968,pa:11,dmg:[151,262]} ],
+    ]
+  },
+  // niv 180 - Labyrinthe du Minotot (boss: Minotot)
+  { id:36, name:'Labyrinthe du Minotot', icon:'⛏️', desc:'Le Minotot maîtrise la magie — niv. 180', minLevel:180, itemLevelMin:168, itemLevelMax:192,
+    rooms:[
+      [ {name:'Minotot',gfx:1300,hp:3000,pa:11,dmg:[152,263]},{name:'Minotor',gfx:1301,hp:2900,pa:11,dmg:[147,255]} ],
+      [ {name:'Minotot',gfx:1300,hp:3045,pa:11,dmg:[155,267]},{name:'Minotor',gfx:1301,hp:2944,pa:11,dmg:[150,259]},{name:'Minotot',gfx:1300,hp:3045,pa:11,dmg:[155,267]} ],
+      [ {name:'Minotor',gfx:1301,hp:2988,pa:11,dmg:[152,263]},{name:'Minotot',gfx:1300,hp:3090,pa:11,dmg:[157,272]},{name:'Minotor',gfx:1301,hp:2988,pa:11,dmg:[152,263]},{name:'Minotot',gfx:1300,hp:3090,pa:11,dmg:[157,272]} ],
+      [ {name:'Minotot',gfx:1300,hp:3135,pa:11,dmg:[159,276]},{name:'Minotor',gfx:1301,hp:3032,pa:11,dmg:[154,267]},{name:'Minotoror',gfx:1302,hp:5000,pa:14,dmg:[227,392]},{name:'Minotot',gfx:1300,hp:3135,pa:11,dmg:[159,276]} ],
+      [ {name:'Minotor',gfx:1301,hp:3076,pa:11,dmg:[156,271]},{name:'Minotoror',gfx:1302,hp:5200,pa:14,dmg:[236,408]},{name:'Minotot Boss',gfx:1300,hp:32000,pa:18,dmg:[951,1643]},{name:'Minotoror',gfx:1302,hp:5200,pa:14,dmg:[236,408]} ],
+    ]
+  },
+  // niv 190 - Donjon du Bworker (boss: Bworker)
+  { id:37, name:'Donjon du Bworker', icon:'👹', desc:'Le Bworker résiste à toute magie — niv. 190', minLevel:190, itemLevelMin:178, itemLevelMax:200,
+    rooms:[
+      [ {name:'Bworker',gfx:1900,hp:3500,pa:11,dmg:[177,307]},{name:'Bworker',gfx:1900,hp:3500,pa:11,dmg:[177,307]} ],
+      [ {name:'Bworker',gfx:1900,hp:3553,pa:11,dmg:[180,311]},{name:'Bworker Enragé',gfx:1901,hp:3700,pa:12,dmg:[187,324]},{name:'Bworker',gfx:1900,hp:3553,pa:11,dmg:[180,311]} ],
+      [ {name:'Bworker Enragé',gfx:1901,hp:3756,pa:12,dmg:[190,329]},{name:'Bworker',gfx:1900,hp:3606,pa:11,dmg:[183,316]},{name:'Bworker Enragé',gfx:1901,hp:3756,pa:12,dmg:[190,329]},{name:'Bworker',gfx:1900,hp:3606,pa:11,dmg:[183,316]} ],
+      [ {name:'Bworker Enragé',gfx:1901,hp:3812,pa:12,dmg:[193,334]},{name:'Bworker',gfx:1900,hp:3659,pa:11,dmg:[185,321]},{name:'Bworker Enragé',gfx:1901,hp:3812,pa:12,dmg:[193,334]},{name:'Bworker Enragé',gfx:1901,hp:3812,pa:12,dmg:[193,334]} ],
+      [ {name:'Bworker Enragé',gfx:1901,hp:3868,pa:12,dmg:[196,339]},{name:'Bworker',gfx:1900,hp:3712,pa:11,dmg:[188,325]},{name:'Bworker Boss',gfx:1902,hp:40000,pa:18,dmg:[1185,2047]},{name:'Bworker Enragé',gfx:1901,hp:3868,pa:12,dmg:[196,339]} ],
+    ]
+  },
+  // niv 190 - Donjon des Firefoux - Pandala (boss: Péki Péki)
+  { id:38, name:'Donjon des Firefoux', icon:'🔥', desc:'Péki Péki brûle tout sur son passage — niv. 190', minLevel:190, itemLevelMin:178, itemLevelMax:200,
+    rooms:[
+      [ {name:'Firefoux',gfx:1950,hp:3480,pa:11,dmg:[176,305]},{name:'Firefoux',gfx:1950,hp:3480,pa:11,dmg:[176,305]} ],
+      [ {name:'Firefoux',gfx:1950,hp:3532,pa:11,dmg:[179,309]},{name:'Firefoux Sombre',gfx:1951,hp:3640,pa:12,dmg:[184,319]},{name:'Firefoux',gfx:1950,hp:3532,pa:11,dmg:[179,309]} ],
+      [ {name:'Firefoux Sombre',gfx:1951,hp:3695,pa:12,dmg:[187,324]},{name:'Firefoux',gfx:1950,hp:3584,pa:11,dmg:[181,313]},{name:'Firefoux Sombre',gfx:1951,hp:3695,pa:12,dmg:[187,324]},{name:'Firefoux',gfx:1950,hp:3584,pa:11,dmg:[181,313]} ],
+      [ {name:'Firefoux Sombre',gfx:1951,hp:3750,pa:12,dmg:[190,329]},{name:'Firefoux',gfx:1950,hp:3636,pa:11,dmg:[184,318]},{name:'Firefoux Sombre',gfx:1951,hp:3750,pa:12,dmg:[190,329]},{name:'Firefoux Sombre',gfx:1951,hp:3750,pa:12,dmg:[190,329]} ],
+      [ {name:'Firefoux Sombre',gfx:1951,hp:3805,pa:12,dmg:[193,333]},{name:'Firefoux',gfx:1950,hp:3688,pa:11,dmg:[187,323]},{name:'Péki Péki',gfx:1952,hp:42000,pa:18,dmg:[1244,2148]},{name:'Firefoux Sombre',gfx:1951,hp:3805,pa:12,dmg:[193,333]} ],
+    ]
+  },
+  // niv 190 - Antre du Kralamoure Géant (boss: Kralamoure Géant)
+  { id:39, name:'Antre du Kralamoure Géant', icon:'🦑', desc:'Le Kralamoure Géant domine les profondeurs — niv. 190', minLevel:190, itemLevelMin:178, itemLevelMax:200,
+    rooms:[
+      [ {name:'Kralamoure',gfx:2000,hp:3460,pa:11,dmg:[175,303]},{name:'Kralamoure',gfx:2000,hp:3460,pa:11,dmg:[175,303]} ],
+      [ {name:'Kralamoure',gfx:2000,hp:3512,pa:11,dmg:[178,307]},{name:'Kralamoure Géant',gfx:2001,hp:3700,pa:12,dmg:[187,324]},{name:'Kralamoure',gfx:2000,hp:3512,pa:11,dmg:[178,307]} ],
+      [ {name:'Kralamoure Géant',gfx:2001,hp:3756,pa:12,dmg:[190,329]},{name:'Kralamoure',gfx:2000,hp:3564,pa:11,dmg:[180,312]},{name:'Kralamoure Géant',gfx:2001,hp:3756,pa:12,dmg:[190,329]},{name:'Kralamoure',gfx:2000,hp:3564,pa:11,dmg:[180,312]} ],
+      [ {name:'Kralamoure Géant',gfx:2001,hp:3812,pa:12,dmg:[193,334]},{name:'Kralamoure',gfx:2000,hp:3616,pa:11,dmg:[183,317]},{name:'Kralamoure Géant',gfx:2001,hp:3812,pa:12,dmg:[193,334]},{name:'Kralamoure Géant',gfx:2001,hp:3812,pa:12,dmg:[193,334]} ],
+      [ {name:'Kralamoure Géant',gfx:2001,hp:3868,pa:12,dmg:[196,339]},{name:'Kralamoure',gfx:2000,hp:3668,pa:11,dmg:[186,321]},{name:'Kralamoure Géant Boss',gfx:2002,hp:45000,pa:18,dmg:[1333,2300]},{name:'Kralamoure Géant',gfx:2001,hp:3868,pa:12,dmg:[196,339]} ],
+    ]
+  },
+  // niv 190 - Repaire des Pandikazes (boss: Maître Pandore) - Pandala
+  { id:40, name:'Repaire des Pandikazes', icon:'🐼', desc:'Maître Pandore maîtrise les arts obscurs — niv. 190', minLevel:190, itemLevelMin:178, itemLevelMax:200,
+    rooms:[
+      [ {name:'Pandikaze',gfx:2050,hp:3440,pa:11,dmg:[174,301]},{name:'Pandikaze',gfx:2050,hp:3440,pa:11,dmg:[174,301]} ],
+      [ {name:'Pandikaze',gfx:2050,hp:3492,pa:11,dmg:[177,306]},{name:'Pandikaze Sombre',gfx:2051,hp:3600,pa:12,dmg:[182,315]},{name:'Pandikaze',gfx:2050,hp:3492,pa:11,dmg:[177,306]} ],
+      [ {name:'Pandikaze Sombre',gfx:2051,hp:3654,pa:12,dmg:[185,320]},{name:'Pandikaze',gfx:2050,hp:3544,pa:11,dmg:[179,310]},{name:'Pandikaze Sombre',gfx:2051,hp:3654,pa:12,dmg:[185,320]},{name:'Pandikaze',gfx:2050,hp:3544,pa:11,dmg:[179,310]} ],
+      [ {name:'Pandikaze Sombre',gfx:2051,hp:3708,pa:12,dmg:[188,325]},{name:'Pandikaze',gfx:2050,hp:3596,pa:11,dmg:[182,315]},{name:'Pandikaze Sombre',gfx:2051,hp:3708,pa:12,dmg:[188,325]},{name:'Pandikaze Sombre',gfx:2051,hp:3708,pa:12,dmg:[188,325]} ],
+      [ {name:'Pandikaze Sombre',gfx:2051,hp:3762,pa:12,dmg:[191,330]},{name:'Pandikaze',gfx:2050,hp:3648,pa:11,dmg:[185,319]},{name:'Maître Pandore',gfx:2052,hp:44000,pa:18,dmg:[1303,2249]},{name:'Pandikaze Sombre',gfx:2051,hp:3762,pa:12,dmg:[191,330]} ],
+    ]
+  },
+  // niv 190 - Donjon de Moon (boss: Moon)
+  { id:41, name:'Donjon de Moon', icon:'🌙', desc:'Moon, le seigneur de son île — niv. 190', minLevel:190, itemLevelMin:178, itemLevelMax:200,
+    rooms:[
+      [ {name:'Monstre de Moon',gfx:2100,hp:3500,pa:11,dmg:[177,307]},{name:'Monstre de Moon',gfx:2100,hp:3500,pa:11,dmg:[177,307]} ],
+      [ {name:'Monstre de Moon',gfx:2100,hp:3553,pa:11,dmg:[180,311]},{name:'Grand Monstre de Moon',gfx:2101,hp:3700,pa:12,dmg:[187,324]},{name:'Monstre de Moon',gfx:2100,hp:3553,pa:11,dmg:[180,311]} ],
+      [ {name:'Grand Monstre de Moon',gfx:2101,hp:3756,pa:12,dmg:[190,329]},{name:'Monstre de Moon',gfx:2100,hp:3606,pa:11,dmg:[183,316]},{name:'Grand Monstre de Moon',gfx:2101,hp:3756,pa:12,dmg:[190,329]},{name:'Monstre de Moon',gfx:2100,hp:3606,pa:11,dmg:[183,316]} ],
+      [ {name:'Grand Monstre de Moon',gfx:2101,hp:3812,pa:12,dmg:[193,334]},{name:'Monstre de Moon',gfx:2100,hp:3659,pa:11,dmg:[185,321]},{name:'Grand Monstre de Moon',gfx:2101,hp:3812,pa:12,dmg:[193,334]},{name:'Grand Monstre de Moon',gfx:2101,hp:3812,pa:12,dmg:[193,334]} ],
+      [ {name:'Grand Monstre de Moon',gfx:2101,hp:3868,pa:12,dmg:[196,339]},{name:'Monstre de Moon',gfx:2100,hp:3712,pa:11,dmg:[188,325]},{name:'Moon',gfx:2102,hp:46000,pa:18,dmg:[1362,2352]},{name:'Grand Monstre de Moon',gfx:2101,hp:3868,pa:12,dmg:[196,339]} ],
     ]
   },
 ];
