@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns:ffdec="https://www.free-decompiler.com/flash" xmlns:xlink="http://www.w3.org/1999/xlink" ffdec:objectType="shape" height="35.8px" width="35.8px" xmlns="http://www.w3.org/2000/svg">
+  <g transform="matrix(1.0, 0.0, 0.0, 1.0, -365.65, -179.1)">
+    <path d="M395.7 196.85 Q398.9 196.75 401.45 198.0 L399.8 195.95 Q396.65 192.8 391.85 193.1 387.05 193.4 383.45 197.0 379.8 200.65 379.5 205.45 379.2 210.25 382.35 213.4 L384.25 214.9 Q383.1 212.45 383.2 209.35 383.45 204.4 387.1 200.75 390.75 197.1 395.7 196.85" fill="url(#gradient0)" fill-rule="evenodd" stroke="none"/>
+    <path d="M395.7 196.85 Q390.75 197.1 387.1 200.75 383.45 204.4 383.2 209.35 383.1 212.45 384.25 214.9 L382.35 213.4 Q379.2 210.25 379.5 205.45 379.8 200.65 383.45 197.0 387.05 193.4 391.85 193.1 396.65 192.8 399.8 195.95 L401.45 198.0 Q398.9 196.75 395.7 196.85 Z" ffdec:has-small-stroke="true" ffdec:original-stroke-width="0.05" fill="none" stroke="#a17960" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.2509804" stroke-width="1.0"/>
+    <path d="M383.7 184.85 Q383.8 181.65 382.55 179.1 L384.6 180.75 Q387.75 183.9 387.45 188.7 387.15 193.5 383.55 197.1 379.9 200.75 375.1 201.05 370.3 201.35 367.15 198.2 L365.65 196.3 Q368.1 197.45 371.2 197.35 376.15 197.1 379.8 193.45 383.45 189.8 383.7 184.85" fill="url(#gradient1)" fill-rule="evenodd" stroke="none"/>
+    <path d="M383.7 184.85 Q383.45 189.8 379.8 193.45 376.15 197.1 371.2 197.35 368.1 197.45 365.65 196.3 L367.15 198.2 Q370.3 201.35 375.1 201.05 379.9 200.75 383.55 197.1 387.15 193.5 387.45 188.7 387.75 183.9 384.6 180.75 L382.55 179.1 Q383.8 181.65 383.7 184.85 Z" ffdec:has-small-stroke="true" ffdec:original-stroke-width="0.05" fill="none" stroke="#a17960" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.2509804" stroke-width="1.0"/>
+  </g>
+  <defs>
+    <radialGradient cx="0" cy="0" gradientTransform="matrix(0.0107, -0.0107, -0.0107, -0.0107, 391.1, 204.65)" gradientUnits="userSpaceOnUse" id="gradient0" r="819.2" spreadMethod="pad">
+      <stop offset="0.027450980392156862" stop-color="#ae8e79"/>
+      <stop offset="1.0" stop-color="#fafafa"/>
+    </radialGradient>
+    <radialGradient cx="0" cy="0" gradientTransform="matrix(0.0107, -0.0107, 0.0107, 0.0107, 375.9, 189.45)" gradientUnits="userSpaceOnUse" id="gradient1" r="819.2" spreadMethod="pad">
+      <stop offset="0.027450980392156862" stop-color="#ae8e79"/>
+      <stop offset="1.0" stop-color="#fafafa"/>
+    </radialGradient>
+  </defs>
+</svg>

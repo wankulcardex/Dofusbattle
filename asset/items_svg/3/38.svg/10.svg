@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns:ffdec="https://www.free-decompiler.com/flash" xmlns:xlink="http://www.w3.org/1999/xlink" ffdec:objectType="shape" height="32.2px" width="34.05px" xmlns="http://www.w3.org/2000/svg">
+  <g transform="matrix(1.0, 0.0, 0.0, 1.0, -277.6, -168.0)">
+    <path d="M292.65 174.65 Q292.65 171.9 294.1 169.95 295.55 167.95 297.6 168.0 299.65 167.95 301.1 169.95 302.6 171.9 302.6 174.65 302.6 177.35 301.1 179.35 299.65 181.3 297.6 181.3 295.55 181.3 294.1 179.35 292.65 177.35 292.65 174.65" fill="#003c00" fill-rule="evenodd" stroke="none"/>
+    <path d="M295.2 178.9 L294.75 178.35 294.2 177.5 293.9 176.8 Q293.6 175.8 293.6 174.7 293.6 173.1 294.2 171.85 L294.75 171.0 Q295.8 169.55 297.4 169.45 L297.5 169.45 297.55 169.45 298.25 169.55 299.15 169.95 Q299.75 171.25 299.65 172.35 L299.6 173.65 299.5 174.7 299.0 176.4 Q298.7 177.3 297.6 178.05 296.55 178.85 295.2 178.9 M297.0 170.7 Q296.7 170.75 296.2 171.65 L296.2 171.85 296.4 172.45 Q297.6 172.95 297.95 171.4 L297.8 170.8 297.0 170.7 M295.2 174.25 L295.45 173.75 295.0 174.45 295.2 174.25 295.2 174.3 Q294.9 175.2 295.25 176.35 295.7 178.1 297.05 177.55 297.95 177.15 297.95 176.15 L297.45 176.2 Q297.1 176.5 296.8 176.45 L296.5 176.15 Q296.2 175.2 296.8 174.5 L296.9 174.4 Q296.3 173.4 295.5 174.05 L295.3 174.2 295.2 174.25" fill="url(#gradient0)" fill-rule="evenodd" stroke="none"/>
+    <path d="M299.15 169.95 L299.5 170.15 300.25 171.0 Q300.95 171.95 301.25 173.15 L301.4 174.7 301.1 176.8 300.65 177.8 300.4 178.15 300.25 178.35 299.7 179.0 299.55 179.15 298.75 179.65 298.6 179.7 298.25 179.8 297.55 179.9 297.5 179.9 Q296.2 179.85 295.2 178.9 296.55 178.85 297.6 178.05 298.7 177.3 299.0 176.4 L299.5 174.7 299.6 173.65 299.65 172.35 Q299.75 171.25 299.15 169.95" fill="#159971" fill-rule="evenodd" stroke="none"/>
+    <path d="M297.0 170.7 L297.8 170.8 297.95 171.4 Q297.6 172.95 296.4 172.45 L296.2 171.85 296.2 171.65 Q296.7 170.75 297.0 170.7 M295.2 174.25 L295.3 174.2 295.5 174.05 Q296.3 173.4 296.9 174.4 L296.8 174.5 Q296.2 175.2 296.5 176.15 L296.8 176.45 Q297.1 176.5 297.45 176.2 L297.95 176.15 Q297.95 177.15 297.05 177.55 295.7 178.1 295.25 176.35 294.9 175.2 295.2 174.3 L295.2 174.25" fill="#ffffff" fill-rule="evenodd" stroke="none"/>
+    <path d="M295.2 174.25 L295.0 174.45 295.45 173.75 295.2 174.25" fill="#7ceb8c" fill-rule="evenodd" stroke="none"/>
+    <path d="M295.2 178.9 L294.75 178.35 294.2 177.5 293.9 176.8 Q293.6 175.8 293.6 174.7 293.6 173.1 294.2 171.85 L294.75 171.0 Q295.8 169.55 297.4 169.45 L297.5 169.45 297.55 169.45 298.25 169.55 299.15 169.95 299.5 170.15 300.25 171.0 Q300.95 171.95 301.25 173.15 L301.4 174.7 301.1 176.8 300.65 177.8 300.4 178.15 300.25 178.35 299.7 179.0 299.55 179.15 298.75 179.65 298.6 179.7 298.25 179.8 297.55 179.9 297.5 179.9 Q296.2 179.85 295.2 178.9 Z" ffdec:has-small-stroke="true" ffdec:original-stroke-width="0.05" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.24313726" stroke-width="1.0"/>
+    <path d="M303.75 171.35 L301.0 174.45 302.75 176.9 308.3 175.05 311.65 173.05 311.3 174.05 305.85 178.05 299.05 181.2 293.4 180.65 291.2 177.0 295.25 172.45 301.5 169.45 305.45 169.45 304.9 170.05 303.75 171.35 M298.1 175.6 L296.75 174.65 294.25 178.1 298.1 175.6" fill="#b98046" fill-rule="evenodd" stroke="none"/>
+    <path d="M311.3 174.05 L310.45 176.25 308.3 179.25 302.3 182.25 300.45 183.7 293.65 183.7 291.2 181.2 291.2 177.0 293.4 180.65 299.05 181.2 305.85 178.05 311.3 174.05 M304.9 170.05 L308.0 172.55 303.75 171.35 304.9 170.05" fill="#412f18" fill-rule="evenodd" stroke="none"/>
+    <path d="M298.1 175.6 L294.25 178.1 296.75 174.65 298.1 175.6" fill="#fad463" fill-rule="evenodd" stroke="none"/>
+    <path d="M303.75 171.35 L301.0 174.45 302.75 176.9 308.3 175.05 311.65 173.05 311.3 174.05 310.45 176.25 308.3 179.25 302.3 182.25 300.45 183.7 293.65 183.7 291.2 181.2 291.2 177.0 295.25 172.45 301.5 169.45 305.45 169.45 304.9 170.05 308.0 172.55 303.75 171.35 304.9 170.05 M291.2 177.0 L293.4 180.65 299.05 181.2 305.85 178.05 311.3 174.05 M298.1 175.6 L294.25 178.1 296.75 174.65 298.1 175.6 Z" ffdec:has-small-stroke="true" ffdec:original-stroke-width="0.05" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.2509804" stroke-width="1.0"/>
+    <path d="M288.8 179.5 Q290.75 181.1 290.75 183.4 290.7 184.85 289.95 186.05 L288.8 187.3 Q286.85 188.9 284.15 188.9 281.45 188.9 279.5 187.3 L278.35 186.05 Q277.55 184.85 277.6 183.4 277.55 181.1 279.5 179.5 281.45 177.9 284.15 177.9 286.85 177.9 288.8 179.5" fill="url(#gradient1)" fill-rule="evenodd" stroke="none"/>
+    <path d="M293.4 186.95 L293.1 190.9 287.95 193.25 287.95 188.65 293.4 186.95" fill="url(#gradient2)" fill-rule="evenodd" stroke="none"/>
+    <path d="M287.95 193.25 L293.1 190.9 293.4 186.95 299.3 189.15 292.35 194.6 287.95 193.25" fill="url(#gradient3)" fill-rule="evenodd" stroke="none"/>
+    <path d="M285.4 198.6 L284.25 198.8 284.2 198.8 283.1 198.6 282.45 198.25 281.85 197.55 281.75 196.95 Q281.7 196.15 282.45 195.65 283.2 195.1 284.25 195.1 285.3 195.1 286.05 195.65 286.8 196.15 286.8 196.95 L286.65 197.55 286.05 198.25 285.45 198.6 285.4 198.6" fill="url(#gradient4)" fill-rule="evenodd" stroke="none"/>
+    <path d="M283.1 198.6 L284.2 198.8 284.25 198.8 285.4 198.6 285.4 199.45 284.2 199.45 283.1 199.45 283.1 198.6" fill="url(#gradient5)" fill-rule="evenodd" stroke="none"/>
+    <path d="M284.2 199.45 L285.4 199.45 286.55 199.45 287.5 200.2 284.2 200.2 284.2 199.45" fill="url(#gradient6)" fill-rule="evenodd" stroke="none"/>
+    <path d="M283.1 199.45 L284.2 199.45 284.2 200.2 280.95 200.2 281.9 199.45 283.1 199.45" fill="url(#gradient7)" fill-rule="evenodd" stroke="none"/>
+    <path d="M288.8 179.5 Q290.75 181.1 290.75 183.4 290.7 184.85 289.95 186.05 L288.8 187.3 Q286.85 188.9 284.15 188.9 281.45 188.9 279.5 187.3 L278.35 186.05 Q277.55 184.85 277.6 183.4 277.55 181.1 279.5 179.5 281.45 177.9 284.15 177.9 286.85 177.9 288.8 179.5 M287.95 193.25 L293.1 190.9 293.4 186.95 287.95 188.65 287.95 193.25 292.35 194.6 299.3 189.15 293.4 186.95 M285.4 198.6 L284.25 198.8 284.2 198.8 283.1 198.6 283.1 199.45 284.2 199.45 285.4 199.45 285.4 198.6 285.45 198.6 286.05 198.25 286.65 197.55 286.8 196.95 Q286.8 196.15 286.05 195.65 285.3 195.1 284.25 195.1 283.2 195.1 282.45 195.65 281.7 196.15 281.75 196.95 L281.85 197.55 282.45 198.25 283.1 198.6 M284.2 200.2 L284.2 199.45 M280.95 200.2 L281.9 199.45 283.1 199.45 M285.4 199.45 L286.55 199.45 287.5 200.2" ffdec:has-small-stroke="true" ffdec:original-stroke-width="0.05" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.2509804" stroke-width="1.0"/>
+  </g>
+  <defs>
+    <radialGradient cx="0" cy="0" gradientTransform="matrix(0.0095, 0.0, 0.0, 0.0127, 295.55, 178.9)" gradientUnits="userSpaceOnUse" id="gradient0" r="819.2" spreadMethod="pad">
+      <stop offset="0.0" stop-color="#159971"/>
+      <stop offset="0.6039215686274509" stop-color="#93fe92"/>
+      <stop offset="0.9882352941176471" stop-color="#f2fff2"/>
+    </radialGradient>
+    <radialGradient cx="0" cy="0" gradientTransform="matrix(0.0146, 0.0, 0.0, 0.0107, 283.75, 180.3)" gradientUnits="userSpaceOnUse" id="gradient1" r="819.2" spreadMethod="pad">
+      <stop offset="0.0" stop-color="#412f18"/>
+      <stop offset="0.596078431372549" stop-color="#b98046"/>
+    </radialGradient>
+    <radialGradient cx="0" cy="0" gradientTransform="matrix(0.0051, 0.0, 0.0, 0.0051, 290.65, 190.1)" gradientUnits="userSpaceOnUse" id="gradient2" r="819.2" spreadMethod="pad">
+      <stop offset="0.0" stop-color="#412f18"/>
+      <stop offset="0.596078431372549" stop-color="#b98046"/>
+    </radialGradient>
+    <radialGradient cx="0" cy="0" gradientTransform="matrix(0.0076, 0.0, 0.0, 0.0076, 293.6, 190.75)" gradientUnits="userSpaceOnUse" id="gradient3" r="819.2" spreadMethod="pad">
+      <stop offset="0.0" stop-color="#412f18"/>
+      <stop offset="0.596078431372549" stop-color="#b98046"/>
+    </radialGradient>
+    <radialGradient cx="0" cy="0" gradientTransform="matrix(0.0051, 0.0, 0.0, 0.0037, 285.6, 197.35)" gradientUnits="userSpaceOnUse" id="gradient4" r="819.2" spreadMethod="pad">
+      <stop offset="0.0" stop-color="#412f18"/>
+      <stop offset="0.596078431372549" stop-color="#b98046"/>
+    </radialGradient>
+    <radialGradient cx="0" cy="0" gradientTransform="matrix(0.0015, 0.0, 0.0, 0.0015, 284.25, 199.0)" gradientUnits="userSpaceOnUse" id="gradient5" r="819.2" spreadMethod="pad">
+      <stop offset="0.0" stop-color="#412f18"/>
+      <stop offset="0.596078431372549" stop-color="#b98046"/>
+    </radialGradient>
+    <radialGradient cx="0" cy="0" gradientTransform="matrix(0.0345, 0.0, 0.0, 0.0253, 286.65, 220.05)" gradientUnits="userSpaceOnUse" id="gradient6" r="819.2" spreadMethod="pad">
+      <stop offset="0.0" stop-color="#412f18"/>
+      <stop offset="0.596078431372549" stop-color="#b98046"/>
+    </radialGradient>
+    <radialGradient cx="0" cy="0" gradientTransform="matrix(0.0342, 0.0, 0.0, 0.0251, 282.05, 219.9)" gradientUnits="userSpaceOnUse" id="gradient7" r="819.2" spreadMethod="pad">
+      <stop offset="0.0" stop-color="#412f18"/>
+      <stop offset="0.596078431372549" stop-color="#b98046"/>
+    </radialGradient>
+  </defs>
+</svg>
