@@ -632,16 +632,21 @@
   }
 
   .fighter-sprite {
-    width: 120px;
-    height: 120px;
-    background: radial-gradient(ellipse at center, rgba(200,160,60,0.1) 0%, transparent 70%);
-    border-radius: 50%;
+    width: 210px;
+    height: 220px;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
-    font-size: 72px;
     filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
-    transition: transform 0.3s;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .fighter-sprite img {
+    max-width: 210px;
+    max-height: 220px;
+    object-fit: contain;
+    image-rendering: pixelated;
   }
 
   .fighter-sprite.attacking {
@@ -1365,7 +1370,110 @@ async function supaFetch(path, opts = {}) {
 }
 
 // ===== CONFIG ASSETS =====
-const ASSET_BASE = 'https://wankulcardex.github.io/Dofusbattle/asset/';
+const ASSET_BASE = 'https://wankulcardex.github.io/Dofusbattle/';
+const SPRITES_BASE = `${ASSET_BASE}sprites/`;
+
+// Mapping classe_id → dossier sprite
+const CLASS_SPRITE = {
+  1:  'feca_h',  2:  'osa_h',   3:  'enu_h',   4:  'sram_h',
+  5:  'xelor_h', 6:  'eca_h',   7:  'eni_f',    8:  'iop_f',
+  9:  'cra',     10: 'sadida_h',11: 'sacrieur_h',12: 'panda_h',
+};
+
+// Infos des animations par état
+const ANIM_INFO = {
+  staticfight: { frames: 8,  w: 61,  h: 139, fps: 8  },
+  attaque:     { frames: 60, w: 160, h: 211, fps: 24 },
+  boost:       { frames: 51, w: 168, h: 148, fps: 24 },
+  hurt:        { frames: 39, w: 183, h: 214, fps: 24 },
+  die:         { frames: 56, w: 161, h: 209, fps: 24 },
+  characterstatic: { frames: 1, w: 67, h: 125, fps: 1 },
+};
+
+// Taille fixe du conteneur sprite en combat (pour éviter les sautillements)
+const SPRITE_CONTAINER_W = 210;
+const SPRITE_CONTAINER_H = 220;
+
+// Gestionnaire d'animations PNG
+class SpriteAnimator {
+  constructor(el, spritePath, availableAnims) {
+    this.el = el;
+    this.spritePath = spritePath;
+    this.availableAnims = availableAnims;
+    this.currentAnim = 'staticfight';
+    this.currentFrame = 1;
+    this.timer = null;
+    this.img = document.createElement('img');
+    this.img.style.cssText = `
+      max-width: ${SPRITE_CONTAINER_W}px;
+      max-height: ${SPRITE_CONTAINER_H}px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    `;
+    this.el.innerHTML = '';
+    this.el.appendChild(this.img);
+    this.play('staticfight');
+  }
+
+  play(animName, onEnd = null) {
+    const anim = ANIM_INFO[animName];
+    if (!anim || !this.availableAnims.includes(animName)) {
+      if (animName !== 'staticfight') this.play('staticfight');
+      return;
+    }
+    if (this.timer) clearInterval(this.timer);
+    this.currentAnim = animName;
+    this.currentFrame = 1;
+    this._updateFrame();
+    
+    if (anim.frames === 1) {
+      if (onEnd) onEnd();
+      return;
+    }
+
+    this.timer = setInterval(() => {
+      this.currentFrame++;
+      if (this.currentFrame > anim.frames) {
+        if (onEnd) {
+          clearInterval(this.timer);
+          onEnd();
+          return;
+        }
+        this.currentFrame = 1;
+      }
+      this._updateFrame();
+    }, 1000 / anim.fps);
+  }
+
+  playOnce(animName, then = 'staticfight') {
+    this.play(animName, () => this.play(then));
+  }
+
+  _updateFrame() {
+    this.img.src = `${this.spritePath}${this.currentAnim}/${this.currentFrame}.png`;
+  }
+
+  destroy() {
+    if (this.timer) clearInterval(this.timer);
+  }
+}
+
+function getSpritePath(classId) {
+  const folder = CLASS_SPRITE[classId] || 'iop_f';
+  return `${SPRITES_BASE}${folder}/`;
+}
+
+function getMonsterSpritePath(gfxId) {
+  return `${SPRITES_BASE}monsters/${gfxId}/`;
+}
+
+// Animations disponibles pour chaque classe (on commence avec cra)
+const CLASS_ANIMS = ['staticfight', 'attaque', 'boost', 'hurt', 'die', 'characterstatic'];
+const MONSTER_ANIMS = ['staticfight', 'attaque', 'hurt', 'die'];
+
+// Registry des animateurs actifs
+let animators = {};
 
 // Mapping classe_id → numéro SWF (homme/femme)
 const CLASS_SWF = {
@@ -1771,7 +1879,6 @@ function renderSpellPanel() {
 // ===== COMBAT =====
 function startDungeon(dungeonIndex) {
   const dungeon = DUNGEONS[dungeonIndex];
-  const cls = getClass(state.player.class_id);
   const spells = CLASS_SPELLS[state.player.class_id] || DEFAULT_SPELLS;
   const maxHp = 50 + (state.player.level || 1) * 10 + (state.player.vitality || 0) * 5;
 
@@ -1794,16 +1901,15 @@ function startDungeon(dungeonIndex) {
   document.getElementById('view-dungeons').style.display = 'none';
   document.getElementById('view-combat').style.display = 'flex';
 
-  // Sprite joueur avec Ruffle
+  // Destroy old animators
+  Object.values(animators).forEach(a => a?.destroy?.());
+  animators = {};
+
+  // Sprite joueur
   const playerSpriteEl = document.getElementById('player-sprite');
   playerSpriteEl.innerHTML = '';
-  const swfUrl = getClassSwf(state.player.class_id, state.player.sex || 0);
-  if (swfUrl) {
-    const ruffleEl = createRufflePlayer(swfUrl, 120, 120);
-    playerSpriteEl.appendChild(ruffleEl);
-  } else {
-    playerSpriteEl.textContent = cls.icon;
-  }
+  const spritePath = getSpritePath(state.player.class_id);
+  animators['player'] = new SpriteAnimator(playerSpriteEl, spritePath, CLASS_ANIMS);
 
   document.getElementById('player-fight-name').textContent = state.player.name;
 
@@ -1834,12 +1940,12 @@ function renderCombat() {
       const spriteWrap = document.createElement('div');
       spriteWrap.className = 'fighter-sprite';
       spriteWrap.id = `monster-sprite-${i}`;
-      spriteWrap.style.cursor = 'pointer';
       spriteWrap.title = `Attaquer ${m.name}`;
       spriteWrap.onclick = () => attackMonster(i);
-      const swfUrl = getMonsterSwf(m.gfx);
-      const ruffleEl = createRufflePlayer(swfUrl, 100, 100);
-      spriteWrap.appendChild(ruffleEl);
+
+      // Pour l'instant emoji si pas de sprite monstre
+      const cls = getClass(state.player.class_id);
+      spriteWrap.innerHTML = `<span style="font-size:80px">${m.icon || '👾'}</span>`;
 
       const infoDiv = document.createElement('div');
       infoDiv.innerHTML = `
@@ -1952,11 +2058,16 @@ function attackMonsterWithSpell(idx, spell) {
 
   monster.currentHp = Math.max(0, monster.currentHp - dmg);
 
-  // Animation
-  const sprite = document.getElementById(`player-sprite`);
-  sprite?.classList.add('attacking');
-  setTimeout(() => sprite?.classList.remove('attacking'), 500);
+  // Animation attaque joueur
+  if (animators['player']) {
+    animators['player'].playOnce('attaque', 'staticfight');
+  } else {
+    const sprite = document.getElementById(`player-sprite`);
+    sprite?.classList.add('attacking');
+    setTimeout(() => sprite?.classList.remove('attacking'), 500);
+  }
 
+  // Animation hurt monstre
   const monsterEl = document.getElementById(`monster-sprite-${idx}`);
   monsterEl?.classList.add('hit');
   setTimeout(() => monsterEl?.classList.remove('hit'), 400);
@@ -2000,9 +2111,14 @@ function endTurn() {
         const dmg = Math.floor(Math.random() * 15) + 5;
         c.playerHp = Math.max(0, c.playerHp - dmg);
         addLog(`💢 ${m.name} attaque pour ${dmg} dégâts !`, 'monster');
-        const playerEl = document.getElementById('player-sprite');
-        playerEl?.classList.add('hit');
-        setTimeout(() => playerEl?.classList.remove('hit'), 400);
+        // Animation hurt joueur
+        if (animators['player']) {
+          animators['player'].playOnce('hurt', 'staticfight');
+        } else {
+          const playerEl = document.getElementById('player-sprite');
+          playerEl?.classList.add('hit');
+          setTimeout(() => playerEl?.classList.remove('hit'), 400);
+        }
         showFloatingNumber(playerEl, dmg);
         renderCombat();
         checkCombatEnd();
@@ -2056,9 +2172,10 @@ function checkCombatEnd() {
 
   if (c.playerHp <= 0) {
     setTimeout(() => {
+      if (animators['player']) animators['player'].play('die');
       addLog('💀 Vous êtes mort... Fuyez !', 'system');
       notify('Défaite...', 'error');
-      setTimeout(exitCombat, 2000);
+      setTimeout(exitCombat, 2500);
     }, 600);
   }
 }
@@ -2070,6 +2187,8 @@ function fleeCombat() {
 }
 
 function exitCombat() {
+  Object.values(animators).forEach(a => a?.destroy?.());
+  animators = {};
   state.combat = null;
   const container = document.getElementById('monsters-container');
   container.innerHTML = '';
