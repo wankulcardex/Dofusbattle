@@ -611,15 +611,26 @@
     justify-content: space-around;
     padding: 32px;
     position: relative;
+    background: url('https://wankulcardex.github.io/Dofusbattle/bgfight/amakna.png') center/cover no-repeat;
+    overflow: hidden;
+  }
+
+  .combat-arena::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    pointer-events: none;
   }
 
   .combat-arena::before {
     content: '';
     position: absolute;
     inset: 20px;
-    border: 1px solid rgba(200,160,60,0.1);
+    border: 1px solid rgba(200,160,60,0.15);
     border-radius: 4px;
-    background: radial-gradient(ellipse at center, rgba(60,35,0,0.3) 0%, transparent 70%);
+    z-index: 1;
+    pointer-events: none;
   }
 
   /* COMBATTANTS */
@@ -628,7 +639,7 @@
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    z-index: 1;
+    z-index: 2;
   }
 
   .fighter-sprite {
@@ -1252,7 +1263,7 @@
             </div>
           </div>
 
-          <div style="font-family:'Cinzel',serif;font-size:32px;color:rgba(200,160,60,0.3);z-index:1">VS</div>
+          <div style="font-family:'Cinzel',serif;font-size:32px;color:rgba(200,160,60,0.5);z-index:2;position:relative">VS</div>
 
           <!-- MONSTRE(S) -->
           <div style="display:flex;gap:24px" id="monsters-container">
