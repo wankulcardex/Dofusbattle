@@ -1394,7 +1394,7 @@ function getMonsterSwf(gfxId) {
 }
 
 // Crée un élément Ruffle pour afficher un SWF
-function createRufflePlayer(swfUrl, width = 120, height = 120) {
+function createRufflePlayer(swfUrl, width = 120, height = 120, animLabel = 'AnimFront') {
   const ruffle = window.RufflePlayer?.newest();
   if (!ruffle) {
     const div = document.createElement('div');
@@ -1411,17 +1411,22 @@ function createRufflePlayer(swfUrl, width = 120, height = 120) {
       scale: 'showAll',
       allowScriptAccess: 'never',
       wmode: 'transparent',
-      // Redirige les dépendances vers le bon dossier asset/
       URLRewrite: [
-        { from: '.*accessories/accessories\\.swf.*', to: `${ASSET_BASE}accessories/accessories.swf` },
-        { from: '.*accessories/accessories_autres\\.swf.*', to: `${ASSET_BASE}accessories/accessories_autres.swf` },
-        { from: '.*accessories/a1\\.swf.*', to: `${ASSET_BASE}accessories/a1.swf` },
-        { from: '.*accessories/a2\\.swf.*', to: `${ASSET_BASE}accessories/a2.swf` },
-        { from: '.*accessories/a3\\.swf.*', to: `${ASSET_BASE}accessories/a3.swf` },
-        { from: '.*accessories/a4\\.swf.*', to: `${ASSET_BASE}accessories/a4.swf` },
-        { from: '.*accessories/a5\\.swf.*', to: `${ASSET_BASE}accessories/a5.swf` },
+        { from: '.*accessories/accessories\\.swf', to: `${ASSET_BASE}accessories/accessories.swf` },
+        { from: '.*accessories/accessories_autres\\.swf', to: `${ASSET_BASE}accessories/accessories_autres.swf` },
+        { from: '.*accessories/a1\\.swf', to: `${ASSET_BASE}accessories/a1.swf` },
+        { from: '.*accessories/a2\\.swf', to: `${ASSET_BASE}accessories/a2.swf` },
+        { from: '.*accessories/a3\\.swf', to: `${ASSET_BASE}accessories/a3.swf` },
+        { from: '.*accessories/a4\\.swf', to: `${ASSET_BASE}accessories/a4.swf` },
+        { from: '.*accessories/a5\\.swf', to: `${ASSET_BASE}accessories/a5.swf` },
       ]
-    });
+    }).then(() => {
+      // Après chargement, joue l'animation idle
+      setTimeout(() => {
+        try { player.callExternalInterface('gotoAndPlay', animLabel); } catch(e) {}
+        try { player.callExternalInterface('gotoAndPlay', 'Static'); } catch(e) {}
+      }, 800);
+    }).catch(() => {});
   }, 200);
   return player;
 }
