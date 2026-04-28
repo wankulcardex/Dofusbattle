@@ -1491,7 +1491,7 @@ class SpriteAnimator {
 }
 
 function getSpritePath(classId) {
-  const folder = CLASS_SPRITE[classId] || 'iop_f';
+  const folder = CLASS_SPRITE[classId] || 'iop';
   return `${SPRITES_BASE}${folder}/`;
 }
 
@@ -2004,7 +2004,10 @@ function renderCombat() {
       hpTxt.textContent = `${m.currentHp}/${m.hp}`;
     }
     if (spriteEl && m.currentHp <= 0) {
-      spriteEl.innerHTML = '<span style="font-size:48px;opacity:0.3">💀</span>';
+      // Si un animator est actif, le laisser jouer die — sinon afficher le crâne directement
+      if (!animators[`monster_${i}`]) {
+        spriteEl.innerHTML = '<span style="font-size:48px;opacity:0.3">💀</span>';
+      }
       spriteEl.onclick = null;
       spriteEl.style.cursor = 'default';
     }
@@ -2050,6 +2053,17 @@ function castSpell(spellIdx) {
     const heal = Math.floor(Math.random() * (spell.healMax - spell.healMin + 1)) + spell.healMin;
     c.playerHp = Math.min(c.playerMaxHp, c.playerHp + heal);
     addLog(`✨ ${state.player.name} utilise ${spell.name} et récupère ${heal} PV !`, 'player');
+    showFloatingNumber(document.getElementById('player-sprite'), heal, 'heal');
+    // Animation boost sur soin
+    if (animators['player']) animators['player'].playOnce('boost');
+  } else if (spell.type === 'drain') {
+    // Attaque + soin
+    const targetIdx = c.monsters.findIndex(m => m.currentHp > 0);
+    if (targetIdx === -1) return;
+    attackMonsterWithSpell(targetIdx, spell);
+    const heal = Math.floor(Math.random() * (spell.healMax - spell.healMin + 1)) + spell.healMin;
+    c.playerHp = Math.min(c.playerMaxHp, c.playerHp + heal);
+    addLog(`🩸 ${state.player.name} récupère ${heal} PV !`, 'player');
     showFloatingNumber(document.getElementById('player-sprite'), heal, 'heal');
   } else {
     // Attaque sur le premier monstre vivant
@@ -2102,7 +2116,14 @@ function attackMonsterWithSpell(idx, spell) {
   const monsterAnim = animators[`monster_${idx}`];
   if (monsterAnim) {
     if (monster.currentHp <= 0) {
-      monsterAnim.play('die');
+      // Joue die jusqu'au bout puis affiche le crâne
+      monsterAnim.play('die', () => {
+        if (monsterEl) {
+          monsterEl.innerHTML = '<span style="font-size:48px;opacity:0.3">💀</span>';
+        }
+        monsterAnim.destroy();
+        delete animators[`monster_${idx}`];
+      });
     } else {
       monsterAnim.playOnce('hurt');
     }
