@@ -1319,17 +1319,6 @@
     </div>
     <div style="font-family:'Cinzel',serif;font-size:11px;color:var(--text-dim);letter-spacing:1px;margin:16px 0 10px;text-transform:uppercase">Choisissez votre classe</div>
     <div class="class-select-grid" id="class-grid"></div>
-    <div class="form-group" style="margin-top:16px">
-      <label>Sexe</label>
-      <div style="display:flex;gap:12px;margin-top:6px">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;font-size:15px">
-          <input type="radio" name="sex" value="0" checked> Masculin
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;font-size:15px">
-          <input type="radio" name="sex" value="1"> Féminin
-        </label>
-      </div>
-    </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('modal-create')">ANNULER</button>
       <button class="btn" onclick="createCharacter()">CRÉER</button>
@@ -1375,9 +1364,10 @@ const SPRITES_BASE = `${ASSET_BASE}sprites/`;
 
 // Mapping classe_id → dossier sprite
 const CLASS_SPRITE = {
-  1:  'feca_h',  2:  'osa_h',   3:  'enu_h',   4:  'sram_h',
-  5:  'xelor_h', 6:  'eca_h',   7:  'eni_f',    8:  'iop_f',
-  9:  'cra',     10: 'sadida_h',11: 'sacrieur_h',12: 'panda_h',
+  6:  'eca',
+  7:  'eni',
+  8:  'iop',
+  9:  'cra',
 };
 
 // Infos des animations par état
@@ -1541,18 +1531,10 @@ function createRufflePlayer(swfUrl, width = 120, height = 120, animLabel = 'Anim
 
 // ===== DONNÉES DU JEU =====
 const CLASSES = [
-  { id: 1,  name: 'Féca',     role: 'Tank',      icon: '🛡️', color: '#4488ff' },
-  { id: 2,  name: 'Osamodas', role: 'Invocateur', icon: '🐉', color: '#88ff44' },
-  { id: 3,  name: 'Enutrof',  role: 'Voleur',    icon: '💰',  color: '#ffcc44' },
-  { id: 4,  name: 'Sram',     role: 'Assassin',  icon: '🗡️', color: '#aa44aa' },
-  { id: 5,  name: 'Xélor',    role: 'Mage Temps', icon: '⏳', color: '#4444ff' },
-  { id: 6,  name: 'Ecaflip',  role: 'Chance',    icon: '🎲',  color: '#ff8844' },
-  { id: 7,  name: 'Eniripsa', role: 'Soigneur',  icon: '💊',  color: '#44ffaa' },
-  { id: 8,  name: 'Iop',      role: 'Guerrier',  icon: '⚔️', color: '#ff4444' },
-  { id: 9,  name: 'Crâ',      role: 'Archer',    icon: '🏹',  color: '#44ccff' },
-  { id: 10, name: 'Sadida',   role: 'Druide',    icon: '🌿',  color: '#44ff44' },
-  { id: 11, name: 'Sacrieur', role: 'Berserker', icon: '🔥',  color: '#ff2222' },
-  { id: 12, name: 'Pandawa',  role: 'Buveur',    icon: '🐼',  color: '#88aaff' },
+  { id: 6,  name: 'Ecaflip',  role: 'Chance',   icon: '🎲', color: '#ff8844' },
+  { id: 7,  name: 'Eniripsa', role: 'Soigneur', icon: '💊', color: '#44ffaa' },
+  { id: 8,  name: 'Iop',      role: 'Guerrier', icon: '⚔️', color: '#ff4444' },
+  { id: 9,  name: 'Crâ',      role: 'Archer',   icon: '🏹', color: '#44ccff' },
 ];
 
 const DUNGEONS = [
@@ -1720,7 +1702,7 @@ async function createCharacter() {
   const name = document.getElementById('create-name').value.trim();
   if (!name) return notify('Entrez un nom', 'error');
   if (!state.selectedClass) return notify('Choisissez une classe', 'error');
-  const sex = document.querySelector('input[name="sex"]:checked').value;
+  const sex = document.querySelector('input[name="sex"]:checked')?.value || '0';
 
   const newPlayer = {
     account_id: 1,
@@ -1759,7 +1741,7 @@ function showMain() {
   document.getElementById('topbar-name').textContent = state.player.name;
 }
 
-function getClass(id) { return CLASSES.find(c => c.id === id) || CLASSES[7]; }
+function getClass(id) { return CLASSES.find(c => c.id === id) || CLASSES[3]; }
 
 function updateCharPanel() {
   const p = state.player;
