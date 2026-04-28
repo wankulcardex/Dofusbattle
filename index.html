@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DofusBattle - Dungeon Crawler</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
 <style>
   :root {
     --gold: #c9a84c;
@@ -1363,29 +1364,100 @@ async function supaFetch(path, opts = {}) {
   return res.status === 204 ? null : res.json();
 }
 
+// ===== CONFIG ASSETS =====
+const ASSET_BASE = 'https://wankulcardex.github.io/Dofusbattle/asset/';
+
+// Mapping classe_id → numéro SWF (homme/femme)
+const CLASS_SWF = {
+  1:  { m: 10, f: 11 },  // Féca
+  2:  { m: 20, f: 21 },  // Osamodas
+  3:  { m: 30, f: 31 },  // Enutrof
+  4:  { m: 40, f: 41 },  // Sram
+  5:  { m: 50, f: 51 },  // Xélor
+  6:  { m: 60, f: 61 },  // Ecaflip
+  7:  { m: 70, f: 71 },  // Eniripsa
+  8:  { m: 80, f: 81 },  // Iop
+  9:  { m: 90, f: 91 },  // Crâ
+  10: { m: 100, f: 101 }, // Sadida
+  11: { m: 110, f: 111 }, // Sacrieur
+  12: { m: 120, f: 121 }, // Pandawa
+};
+
+function getClassSwf(classId, sex = 0) {
+  const swf = CLASS_SWF[classId];
+  if (!swf) return null;
+  return `${ASSET_BASE}${sex === 1 ? swf.f : swf.m}.swf`;
+}
+
+function getMonsterSwf(gfxId) {
+  return `${ASSET_BASE}${gfxId}.swf`;
+}
+
+// Crée un élément Ruffle pour afficher un SWF
+function createRufflePlayer(swfUrl, width = 120, height = 120) {
+  const ruffle = window.RufflePlayer?.newest();
+  if (!ruffle) {
+    const div = document.createElement('div');
+    div.style.cssText = `width:${width}px;height:${height}px;display:flex;align-items:center;justify-content:center;font-size:48px`;
+    div.textContent = '❓';
+    return div;
+  }
+  const player = ruffle.createPlayer();
+  player.style.cssText = `width:${width}px;height:${height}px;background:transparent`;
+  player.load({ url: swfUrl, backgroundColor: '#00000000', scale: 'showAll', allowScriptAccess: 'never' });
+  return player;
+}
+
 // ===== DONNÉES DU JEU =====
 const CLASSES = [
-  { id: 1,  name: 'Féca',     role: 'Tank',     icon: '🛡️',  color: '#4488ff' },
-  { id: 2,  name: 'Osamodas', role: 'Invocateur',icon: '🐉', color: '#88ff44' },
-  { id: 3,  name: 'Enutrof',  role: 'Voleur',   icon: '💰',  color: '#ffcc44' },
-  { id: 4,  name: 'Sram',     role: 'Assassin', icon: '🗡️',  color: '#aa44aa' },
-  { id: 5,  name: 'Xélor',    role: 'Mage Temps',icon: '⏳', color: '#4444ff' },
-  { id: 6,  name: 'Ecaflip',  role: 'Chance',   icon: '🎲',  color: '#ff8844' },
-  { id: 7,  name: 'Eniripsa', role: 'Soigneur', icon: '💊',  color: '#44ffaa' },
-  { id: 8,  name: 'Iop',      role: 'Guerrier', icon: '⚔️',  color: '#ff4444' },
-  { id: 9,  name: 'Crâ',      role: 'Archer',   icon: '🏹',  color: '#44ccff' },
-  { id: 10, name: 'Sadida',   role: 'Druide',   icon: '🌿',  color: '#44ff44' },
-  { id: 11, name: 'Sacrieur', role: 'Berserker',icon: '🔥',  color: '#ff2222' },
-  { id: 12, name: 'Pandawa',  role: 'Buveur',   icon: '🐼',  color: '#88aaff' },
+  { id: 1,  name: 'Féca',     role: 'Tank',      icon: '🛡️', color: '#4488ff' },
+  { id: 2,  name: 'Osamodas', role: 'Invocateur', icon: '🐉', color: '#88ff44' },
+  { id: 3,  name: 'Enutrof',  role: 'Voleur',    icon: '💰',  color: '#ffcc44' },
+  { id: 4,  name: 'Sram',     role: 'Assassin',  icon: '🗡️', color: '#aa44aa' },
+  { id: 5,  name: 'Xélor',    role: 'Mage Temps', icon: '⏳', color: '#4444ff' },
+  { id: 6,  name: 'Ecaflip',  role: 'Chance',    icon: '🎲',  color: '#ff8844' },
+  { id: 7,  name: 'Eniripsa', role: 'Soigneur',  icon: '💊',  color: '#44ffaa' },
+  { id: 8,  name: 'Iop',      role: 'Guerrier',  icon: '⚔️', color: '#ff4444' },
+  { id: 9,  name: 'Crâ',      role: 'Archer',    icon: '🏹',  color: '#44ccff' },
+  { id: 10, name: 'Sadida',   role: 'Druide',    icon: '🌿',  color: '#44ff44' },
+  { id: 11, name: 'Sacrieur', role: 'Berserker', icon: '🔥',  color: '#ff2222' },
+  { id: 12, name: 'Pandawa',  role: 'Buveur',    icon: '🐼',  color: '#88aaff' },
 ];
 
 const DUNGEONS = [
-  { id: 1, name: 'Donjon des Piou',     icon: '🐦', desc: 'Affrontez 3 Piou dans leur nid',        level: 1,  minLevel: 1,  monsters: [{name:'Piou Rouge', icon:'🔴', hp:30, pa:6, spells:['Bec Rouge']}, {name:'Piou Bleu', icon:'🔵', hp:25, pa:5, spells:['Bec Bleu']}, {name:'Piou Jaune', icon:'🟡', hp:28, pa:5, spells:['Bec Jaune']}] },
-  { id: 2, name: 'Donjon des Larves',   icon: '🐛', desc: 'Les larves défendent leur cocon',       level: 2,  minLevel: 2,  monsters: [{name:'Larve Bleue', icon:'🔵', hp:50, pa:6, spells:['Crachat']}, {name:'Larve Verte', icon:'🟢', hp:60, pa:7, spells:['Acide']}, {name:'Larve Verte', icon:'🟢', hp:60, pa:7, spells:['Acide']}] },
-  { id: 3, name: 'Donjon des Bouftous', icon: '🐂', desc: 'Le troupeau est en colère',             level: 3,  minLevel: 5,  monsters: [{name:'Bouftou', icon:'🐂', hp:100, pa:7, spells:['Charge', 'Coup de Corne']}, {name:'Bouftou Royal', icon:'👑', hp:150, pa:8, spells:['Charge Royale']}] },
-  { id: 4, name: 'Donjon des Blops',    icon: '🫧', desc: 'Les blops envahissent la région',       level: 4,  minLevel: 10, monsters: [{name:'Blop Indigo', icon:'🫧', hp:120, pa:7, spells:['Jet de Blop']}, {name:'Blop Cerise', icon:'🍒', hp:130, pa:7, spells:['Bave Acide']}, {name:'Blop Royal', icon:'👑', hp:200, pa:9, spells:['Explosion']}] },
-  { id: 5, name: 'Donjon des Craqueleurs', icon: '🪨', desc: 'Méfiez-vous de leur cuirasse',      level: 5,  minLevel: 20, monsters: [{name:'Craqueleur', icon:'🪨', hp:250, pa:8, spells:['Frappe du Craqueleur', 'Armure']}, {name:'Grand Craqueleur', icon:'⛰️', hp:400, pa:10, spells:['Avalanche']}] },
-  { id: 6, name: 'Donjon des Tofus',    icon: '🦃', desc: 'Les Tofus protègent leurs œufs',       level: 6,  minLevel: 30, monsters: [{name:'Tofu', icon:'🦃', hp:180, pa:7, spells:['Coup d\'Aile']}, {name:'Tofu Royal', icon:'👑', hp:350, pa:9, spells:['Tofu Royal']}], locked: true },
+  { id: 1, name: 'Donjon des Piou', icon: '🐦', desc: 'Affrontez 3 Piou dans leur nid', minLevel: 1,
+    monsters: [
+      {name:'Piou Rouge',  gfx: 1212, hp:30, pa:6, dmg:[3,8]},
+      {name:'Piou Bleu',   gfx: 1212, hp:25, pa:5, dmg:[2,7]},
+      {name:'Piou Jaune',  gfx: 1212, hp:28, pa:5, dmg:[2,7]},
+    ]},
+  { id: 2, name: 'Donjon des Larves', icon: '🐛', desc: 'Les larves défendent leur cocon', minLevel: 2,
+    monsters: [
+      {name:'Larve Bleue', gfx: 1563, hp:50, pa:6, dmg:[5,12]},
+      {name:'Larve Verte', gfx: 1568, hp:60, pa:7, dmg:[6,14]},
+      {name:'Larve Verte', gfx: 1568, hp:60, pa:7, dmg:[6,14]},
+    ]},
+  { id: 3, name: 'Donjon des Bouftous', icon: '🐂', desc: 'Le troupeau est en colère', minLevel: 5,
+    monsters: [
+      {name:'Bouftou',       gfx: 1566, hp:100, pa:7, dmg:[8,18]},
+      {name:'Bouftou Royal', gfx: 1566, hp:150, pa:8, dmg:[12,22]},
+    ]},
+  { id: 4, name: 'Donjon des Blops', icon: '🫧', desc: 'Les blops envahissent la région', minLevel: 10,
+    monsters: [
+      {name:'Blop Indigo', gfx: 1103, hp:120, pa:7, dmg:[10,20]},
+      {name:'Blop Cerise', gfx: 1103, hp:130, pa:7, dmg:[10,20]},
+      {name:'Blop Royal',  gfx: 1103, hp:200, pa:9, dmg:[15,28]},
+    ]},
+  { id: 5, name: 'Donjon des Craqueleurs', icon: '🪨', desc: 'Méfiez-vous de leur cuirasse', minLevel: 20,
+    monsters: [
+      {name:'Craqueleur',       gfx: 1156, hp:250, pa:8, dmg:[15,30]},
+      {name:'Grand Craqueleur', gfx: 1156, hp:400, pa:10, dmg:[20,40]},
+    ]},
+  { id: 6, name: 'Donjon des Tofus', icon: '🦃', desc: 'Les Tofus protègent leurs œufs', minLevel: 30,
+    monsters: [
+      {name:'Tofu',       gfx: 1198, hp:180, pa:7, dmg:[12,25]},
+      {name:'Tofu Royal', gfx: 1198, hp:350, pa:9, dmg:[18,35]},
+    ]},
 ];
 
 // SORTS PAR CLASSE (simplifiés pour le prototype)
@@ -1641,7 +1713,6 @@ function renderDungeons() {
     </div>`;
   }).join('');
 }
-  
 
 // ===== INVENTAIRE =====
 function renderInventory() {
@@ -1697,12 +1768,20 @@ function startDungeon(dungeonIndex) {
     playerTurn: true,
   };
 
-  // Switch vue
   document.getElementById('view-dungeons').style.display = 'none';
   document.getElementById('view-combat').style.display = 'flex';
 
-  // Setup UI
-  document.getElementById('player-sprite').textContent = cls.icon;
+  // Sprite joueur avec Ruffle
+  const playerSpriteEl = document.getElementById('player-sprite');
+  playerSpriteEl.innerHTML = '';
+  const swfUrl = getClassSwf(state.player.class_id, state.player.sex || 0);
+  if (swfUrl) {
+    const ruffleEl = createRufflePlayer(swfUrl, 120, 120);
+    playerSpriteEl.appendChild(ruffleEl);
+  } else {
+    playerSpriteEl.textContent = cls.icon;
+  }
+
   document.getElementById('player-fight-name').textContent = state.player.name;
 
   renderCombat();
@@ -1720,23 +1799,57 @@ function renderCombat() {
   bar.className = 'hp-fill ' + (hpPct > 60 ? 'high' : hpPct > 30 ? 'mid' : '');
   document.getElementById('player-hp-text').textContent = `${c.playerHp}/${c.playerMaxHp}`;
 
-  // Monstres
+  // Monstres — crée seulement si pas encore créés
   const container = document.getElementById('monsters-container');
-  container.innerHTML = c.monsters.map((m, i) => {
-    const mPct = (m.currentHp / m.hp) * 100;
-    const barClass = mPct > 60 ? '' : mPct > 30 ? 'mid' : '';
-    return `
-    <div class="fighter" id="fighter-monster-${i}">
-      <div class="fighter-sprite" id="monster-sprite-${i}" style="cursor:pointer" onclick="attackMonster(${i})" title="Attaquer ${m.name}">${m.icon}</div>
-      <div class="fighter-name">${m.name}</div>
-      <div class="hp-bar-container">
-        <div class="hp-bar"><div class="hp-fill ${barClass}" id="monster-hp-bar-${i}" style="width:${mPct}%"></div></div>
-        <div class="hp-text" id="monster-hp-text-${i}">${m.currentHp}/${m.hp}</div>
-      </div>
-    </div>`;
-  }).join('');
+  if (!container.dataset.initialized) {
+    container.innerHTML = '';
+    c.monsters.forEach((m, i) => {
+      const div = document.createElement('div');
+      div.className = 'fighter';
+      div.id = `fighter-monster-${i}`;
 
-  // PA pips
+      const spriteWrap = document.createElement('div');
+      spriteWrap.className = 'fighter-sprite';
+      spriteWrap.id = `monster-sprite-${i}`;
+      spriteWrap.style.cursor = 'pointer';
+      spriteWrap.title = `Attaquer ${m.name}`;
+      spriteWrap.onclick = () => attackMonster(i);
+      const swfUrl = getMonsterSwf(m.gfx);
+      const ruffleEl = createRufflePlayer(swfUrl, 100, 100);
+      spriteWrap.appendChild(ruffleEl);
+
+      const infoDiv = document.createElement('div');
+      infoDiv.innerHTML = `
+        <div class="fighter-name">${m.name}</div>
+        <div class="hp-bar-container">
+          <div class="hp-bar"><div class="hp-fill" id="monster-hp-bar-${i}" style="width:100%"></div></div>
+          <div class="hp-text" id="monster-hp-text-${i}">${m.hp}/${m.hp}</div>
+        </div>`;
+
+      div.appendChild(spriteWrap);
+      div.appendChild(infoDiv);
+      container.appendChild(div);
+    });
+    container.dataset.initialized = '1';
+  }
+
+  // Met à jour les HP bars des monstres
+  c.monsters.forEach((m, i) => {
+    const hpBar = document.getElementById(`monster-hp-bar-${i}`);
+    const hpTxt = document.getElementById(`monster-hp-text-${i}`);
+    const spriteEl = document.getElementById(`monster-sprite-${i}`);
+    if (hpBar && hpTxt) {
+      const mPct = (m.currentHp / m.hp) * 100;
+      hpBar.style.width = mPct + '%';
+      hpBar.className = 'hp-fill ' + (mPct > 60 ? '' : mPct > 30 ? 'mid' : '');
+      hpTxt.textContent = `${m.currentHp}/${m.hp}`;
+    }
+    if (spriteEl && m.currentHp <= 0) {
+      spriteEl.innerHTML = '<span style="font-size:48px;opacity:0.3">💀</span>';
+      spriteEl.onclick = null;
+      spriteEl.style.cursor = 'default';
+    }
+  });
   const paPips = document.getElementById('pa-pips');
   paPips.innerHTML = Array(c.playerMaxPa).fill(0).map((_, i) =>
     `<div class="pip pa ${i < c.playerPa ? 'filled' : ''}"></div>`
@@ -1935,6 +2048,9 @@ function fleeCombat() {
 
 function exitCombat() {
   state.combat = null;
+  const container = document.getElementById('monsters-container');
+  container.innerHTML = '';
+  delete container.dataset.initialized;
   document.getElementById('view-combat').style.display = 'none';
   document.getElementById('view-dungeons').style.display = 'block';
   updateCharPanel();
