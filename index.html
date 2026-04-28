@@ -611,26 +611,15 @@
     justify-content: space-around;
     padding: 32px;
     position: relative;
-    background: url('https://wankulcardex.github.io/Dofusbattle/bgfight/amakna.png') center/cover no-repeat;
-    overflow: hidden;
-  }
-
-  .combat-arena::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    pointer-events: none;
   }
 
   .combat-arena::before {
     content: '';
     position: absolute;
     inset: 20px;
-    border: 1px solid rgba(200,160,60,0.15);
+    border: 1px solid rgba(200,160,60,0.1);
     border-radius: 4px;
-    z-index: 1;
-    pointer-events: none;
+    background: radial-gradient(ellipse at center, rgba(60,35,0,0.3) 0%, transparent 70%);
   }
 
   /* COMBATTANTS */
@@ -639,7 +628,7 @@
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    z-index: 2;
+    z-index: 1;
   }
 
   .fighter-sprite {
@@ -1096,7 +1085,7 @@
       <input type="password" id="login-pass" placeholder="••••••••" value="password">
     </div>
     <button class="btn" onclick="doLogin()">SE CONNECTER</button>
-    <button class="btn btn-secondary" onclick="showCreateChar()">CRÉER UN PERSONNAGE</button>
+    <button class="btn btn-secondary" onclick="doRegister()">CRÉER UN COMPTE</button>
   </div>
 </div>
 
@@ -1263,7 +1252,7 @@
             </div>
           </div>
 
-          <div style="font-family:'Cinzel',serif;font-size:32px;color:rgba(200,160,60,0.5);z-index:2;position:relative">VS</div>
+          <div style="font-family:'Cinzel',serif;font-size:32px;color:rgba(200,160,60,0.3);z-index:1">VS</div>
 
           <!-- MONSTRE(S) -->
           <div style="display:flex;gap:24px" id="monsters-container">
@@ -1349,7 +1338,7 @@
 <script>
 // ===== CONFIG SUPABASE =====
 const SUPABASE_URL = 'https://vlbnbfyxpaybgwetffam.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_QNl5VZsSQJz_kQcw72gbLA_VL7L6C2k';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZsYm5iZnl4cGF5Ymd3ZXRmZmFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMjAwMjYsImV4cCI6MjA5Mjg5NjAyNn0.KR2Qo19MP_MWv6GFZS5ifYr7156-N0w7kZBdy43LrD4';
 
 async function supaFetch(path, opts = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
@@ -1682,42 +1671,70 @@ function closeModal(id) { document.getElementById(id).classList.remove('show'); 
 function formatNum(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
 
 // ===== LOGIN =====
+async function doRegister() {
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value.trim();
+  if (!user || !pass) return notify('Remplissez tous les champs', 'error');
+  if (pass.length < 4) return notify('Mot de passe trop court (4 min)', 'error');
+
+  try {
+    // Vérifie si le pseudo existe déjà
+    const existing = await supaFetch(`accounts?username=eq.${encodeURIComponent(user)}&limit=1`);
+    if (existing && existing.length > 0) return notify('Ce pseudo est déjà pris', 'error');
+
+    // Crée le compte
+    const res = await supaFetch('accounts', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: user,
+        password: pass,
+        pseudo: user,
+        banned: false,
+        admin: false
+      })
+    });
+    state.account = res[0];
+    notify('Compte créé ! Créez votre personnage.', 'success');
+    showCreateChar();
+  } catch(e) {
+    notify('Erreur : ' + e.message, 'error');
+  }
+}
+
 async function doLogin() {
   const user = document.getElementById('login-user').value.trim();
   const pass = document.getElementById('login-pass').value.trim();
-  if (!user) return notify('Entrez votre identifiant', 'error');
+  if (!user || !pass) return notify('Remplissez tous les champs', 'error');
 
   try {
-    // Pour la démo, on simule un login (à connecter à Supabase Auth ou accounts table)
-    state.account = { id: 1, username: user, pseudo: user };
-    
-    // Charge le personnage
-    const chars = await supaFetch(`players?account_id=eq.1&limit=1`);
-    
-    if (chars && chars.length > 0) {
-      state.player = chars[0];
-    } else {
-      // Personnage de démo
-      state.player = {
-        id: 1, name: user, class_id: 8, level: 1, xp: 0,
-        kamas: 1000, vitality: 0, strength: 0, wisdom: 0,
-        intelligence: 0, chance: 0, agility: 0,
-        stat_points: 5, spell_points: 0, spells: '', items: '',
-        inventory: '', dungeon_progress: 0
-      };
-    }
+    // Vérifie le compte dans accounts
+    const accounts = await supaFetch(`accounts?username=eq.${encodeURIComponent(user)}&limit=1`);
+    if (!accounts || accounts.length === 0) return notify('Compte introuvable', 'error');
 
-    showMain();
+    const account = accounts[0];
+    if (account.banned) return notify('Compte banni', 'error');
+    if (account.password !== pass) return notify('Mot de passe incorrect', 'error');
+
+    state.account = account;
+
+    // Charge le personnage lié
+    const players = await supaFetch(`players?account_id=eq.${account.id}&limit=1`);
+    if (players && players.length > 0) {
+      state.player = players[0];
+      // Mise à jour last_login
+      supaFetch(`accounts?id=eq.${account.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ last_login: new Date().toISOString() }),
+        prefer: 'return=minimal'
+      }).catch(() => {});
+      showMain();
+    } else {
+      // Pas de personnage → création
+      notify('Aucun personnage — créez-en un !', '');
+      showCreateChar();
+    }
   } catch(e) {
-    // Mode démo sans Supabase
-    state.player = {
-      id: 1, name: user, class_id: 8, level: 1, xp: 0,
-      kamas: 1000, vitality: 0, strength: 0, wisdom: 0,
-      intelligence: 0, chance: 0, agility: 0,
-      stat_points: 5, spell_points: 0, spells: '', items: '',
-      inventory: '', dungeon_progress: 0
-    };
-    showMain();
+    notify('Erreur de connexion : ' + e.message, 'error');
   }
 }
 
@@ -1751,16 +1768,19 @@ async function createCharacter() {
   const name = document.getElementById('create-name').value.trim();
   if (!name) return notify('Entrez un nom', 'error');
   if (!state.selectedClass) return notify('Choisissez une classe', 'error');
-  const sex = document.querySelector('input[name="sex"]:checked')?.value || '0';
+  if (!state.account?.id) return notify('Vous devez être connecté', 'error');
 
   const newPlayer = {
-    account_id: 1,
-    name, class_id: state.selectedClass, sex: parseInt(sex),
+    account_id: state.account.id,
+    name,
+    class_id: state.selectedClass,
+    sex: 0,
     level: 1, xp: 0, kamas: 1000,
     vitality: 0, strength: 0, wisdom: 0,
     intelligence: 0, chance: 0, agility: 0,
     stat_points: 5, spell_points: 0,
-    spells: '', items: '', inventory: '', dungeon_progress: 0
+    dungeon_progress: 0,
+    total_kills: 0
   };
 
   try {
@@ -1771,8 +1791,8 @@ async function createCharacter() {
     state.player = res[0];
     notify(`${name} créé avec succès !`, 'success');
   } catch(e) {
-    state.player = { id: Date.now(), ...newPlayer };
-    notify(`${name} créé (mode hors-ligne)`, 'success');
+    notify('Erreur création : ' + e.message, 'error');
+    return;
   }
 
   closeModal('modal-create');
@@ -1845,10 +1865,26 @@ async function savePlayer() {
   try {
     await supaFetch(`players?id=eq.${state.player.id}`, {
       method: 'PATCH',
-      body: JSON.stringify(state.player),
+      body: JSON.stringify({
+        xp: state.player.xp,
+        level: state.player.level,
+        kamas: state.player.kamas,
+        vitality: state.player.vitality,
+        strength: state.player.strength,
+        wisdom: state.player.wisdom,
+        intelligence: state.player.intelligence,
+        chance: state.player.chance,
+        agility: state.player.agility,
+        stat_points: state.player.stat_points,
+        dungeon_progress: state.player.dungeon_progress,
+        total_kills: state.player.total_kills || 0,
+        last_played: new Date().toISOString()
+      }),
       prefer: 'return=minimal'
     });
-  } catch(e) { /* hors ligne */ }
+  } catch(e) {
+    console.warn('Sauvegarde échouée:', e.message);
+  }
 }
 
 // ===== DONJONS =====
@@ -2182,11 +2218,11 @@ function endTurn() {
         const dmg = Math.floor(Math.random() * 15) + 5;
         c.playerHp = Math.max(0, c.playerHp - dmg);
         addLog(`💢 ${m.name} attaque pour ${dmg} dégâts !`, 'monster');
+        const playerEl = document.getElementById('player-sprite');
         // Animation hurt joueur
         if (animators['player']) {
-          animators['player'].playOnce('hurt', 'staticfight');
+          animators['player'].playOnce('hurt');
         } else {
-          const playerEl = document.getElementById('player-sprite');
           playerEl?.classList.add('hit');
           setTimeout(() => playerEl?.classList.remove('hit'), 400);
         }
