@@ -1575,40 +1575,150 @@ const CLASSES = [
   { id: 9,  name: 'Crâ',      role: 'Archer',   icon: '🏹', color: '#44ccff' },
 ];
 
+// Couleurs CSS filter pour les variantes de Piou
+const PIOU_VARIANTS = [
+  { name: 'Piou Bleu',   filter: 'none' },
+  { name: 'Piou Rouge',  filter: 'hue-rotate(200deg) saturate(2) brightness(1.1)' },
+  { name: 'Piou Vert',   filter: 'hue-rotate(80deg) saturate(1.5)' },
+  { name: 'Piou Jaune',  filter: 'hue-rotate(155deg) saturate(2.5) brightness(1.2)' },
+  { name: 'Piou Violet', filter: 'hue-rotate(260deg) saturate(1.5)' },
+  { name: 'Piou Rose',   filter: 'hue-rotate(230deg) saturate(1.8) brightness(1.1)' },
+];
+
+// Génère les salles d'un donjon
+// rooms: tableau de tableaux de monstres par salle
 const DUNGEONS = [
-  { id: 1, name: 'Donjon des Piou', icon: '🐦', desc: 'Affrontez 3 Piou dans leur nid', minLevel: 1,
-    monsters: [
-      {name:'Piou Rouge',  gfx: 1212, hp:30, pa:6, dmg:[3,8]},
-      {name:'Piou Bleu',   gfx: 1212, hp:25, pa:5, dmg:[2,7]},
-      {name:'Piou Jaune',  gfx: 1212, hp:28, pa:5, dmg:[2,7]},
-    ]},
-  { id: 2, name: 'Donjon des Larves', icon: '🐛', desc: 'Les larves défendent leur cocon', minLevel: 2,
-    monsters: [
-      {name:'Larve Bleue', gfx: 1563, hp:50, pa:6, dmg:[5,12]},
-      {name:'Larve Verte', gfx: 1568, hp:60, pa:7, dmg:[6,14]},
-      {name:'Larve Verte', gfx: 1568, hp:60, pa:7, dmg:[6,14]},
-    ]},
-  { id: 3, name: 'Donjon des Bouftous', icon: '🐂', desc: 'Le troupeau est en colère', minLevel: 5,
-    monsters: [
-      {name:'Bouftou',       gfx: 1566, hp:100, pa:7, dmg:[8,18]},
-      {name:'Bouftou Royal', gfx: 1566, hp:150, pa:8, dmg:[12,22]},
-    ]},
-  { id: 4, name: 'Donjon des Blops', icon: '🫧', desc: 'Les blops envahissent la région', minLevel: 10,
-    monsters: [
-      {name:'Blop Indigo', gfx: 1103, hp:120, pa:7, dmg:[10,20]},
-      {name:'Blop Cerise', gfx: 1103, hp:130, pa:7, dmg:[10,20]},
-      {name:'Blop Royal',  gfx: 1103, hp:200, pa:9, dmg:[15,28]},
-    ]},
-  { id: 5, name: 'Donjon des Craqueleurs', icon: '🪨', desc: 'Méfiez-vous de leur cuirasse', minLevel: 20,
-    monsters: [
-      {name:'Craqueleur',       gfx: 1156, hp:250, pa:8, dmg:[15,30]},
-      {name:'Grand Craqueleur', gfx: 1156, hp:400, pa:10, dmg:[20,40]},
-    ]},
-  { id: 6, name: 'Donjon des Tofus', icon: '🦃', desc: 'Les Tofus protègent leurs œufs', minLevel: 30,
-    monsters: [
-      {name:'Tofu',       gfx: 1198, hp:180, pa:7, dmg:[12,25]},
-      {name:'Tofu Royal', gfx: 1198, hp:350, pa:9, dmg:[18,35]},
-    ]},
+  {
+    id: 1, name: 'Donjon des Piou', icon: '🐦',
+    desc: '5 salles de Piou de plus en plus nombreux',
+    minLevel: 1, itemLevelMin: 1, itemLevelMax: 15,
+    rooms: [
+      // Salle 1 : 1 Piou
+      [ {gfx:1212, hp:25, pa:5, dmg:[2,6], piouVariant:0} ],
+      // Salle 2 : 2 Piou
+      [ {gfx:1212, hp:25, pa:5, dmg:[2,6], piouVariant:1},
+        {gfx:1212, hp:25, pa:5, dmg:[2,6], piouVariant:2} ],
+      // Salle 3 : 2 Piou + 1 plus fort
+      [ {gfx:1212, hp:25, pa:5, dmg:[2,6], piouVariant:0},
+        {gfx:1212, hp:28, pa:5, dmg:[3,7], piouVariant:3},
+        {gfx:1212, hp:25, pa:5, dmg:[2,6], piouVariant:4} ],
+      // Salle 4 : 3 Piou forts
+      [ {gfx:1212, hp:30, pa:6, dmg:[3,8], piouVariant:1},
+        {gfx:1212, hp:30, pa:6, dmg:[3,8], piouVariant:5},
+        {gfx:1212, hp:30, pa:6, dmg:[3,8], piouVariant:2},
+        {gfx:1212, hp:28, pa:5, dmg:[2,7], piouVariant:3} ],
+      // Salle 5 (boss) : 4 Piou dont un Piou Royal
+      [ {gfx:1212, hp:30, pa:6, dmg:[3,8], piouVariant:0},
+        {gfx:1212, hp:30, pa:6, dmg:[3,8], piouVariant:1},
+        {gfx:1212, hp:35, pa:6, dmg:[4,9], piouVariant:3, name:'Piou Royal'},
+        {gfx:1212, hp:30, pa:6, dmg:[3,8], piouVariant:5} ],
+    ]
+  },
+  {
+    id: 2, name: 'Donjon des Larves', icon: '🐛',
+    desc: 'Les larves défendent leur cocon',
+    minLevel: 2, itemLevelMin: 5, itemLevelMax: 20,
+    rooms: [
+      [ {name:'Larve Bleue',  gfx:1563, hp:45, pa:5, dmg:[4,10]} ],
+      [ {name:'Larve Bleue',  gfx:1563, hp:45, pa:5, dmg:[4,10]},
+        {name:'Larve Verte',  gfx:1568, hp:50, pa:6, dmg:[5,11]} ],
+      [ {name:'Larve Bleue',  gfx:1563, hp:45, pa:5, dmg:[4,10]},
+        {name:'Larve Verte',  gfx:1568, hp:50, pa:6, dmg:[5,11]},
+        {name:'Larve Orange', gfx:1563, hp:55, pa:6, dmg:[5,12]} ],
+      [ {name:'Larve Bleue',  gfx:1563, hp:50, pa:5, dmg:[5,11]},
+        {name:'Larve Verte',  gfx:1568, hp:55, pa:6, dmg:[5,12]},
+        {name:'Larve Orange', gfx:1563, hp:55, pa:6, dmg:[5,12]},
+        {name:'Larve Verte',  gfx:1568, hp:50, pa:6, dmg:[5,11]} ],
+      [ {name:'Larve Bleue',  gfx:1563, hp:50, pa:5, dmg:[5,11]},
+        {name:'Larve Verte',  gfx:1568, hp:60, pa:6, dmg:[6,14]},
+        {name:'Shin Larve',   gfx:1563, hp:80, pa:7, dmg:[8,16]},
+        {name:'Larve Orange', gfx:1563, hp:55, pa:6, dmg:[5,12]} ],
+    ]
+  },
+  {
+    id: 3, name: 'Donjon des Bouftous', icon: '🐂',
+    desc: 'Le troupeau est en colère',
+    minLevel: 5, itemLevelMin: 10, itemLevelMax: 25,
+    rooms: [
+      [ {name:'Bouftou',       gfx:1566, hp:80,  pa:6, dmg:[6,14]} ],
+      [ {name:'Bouftou',       gfx:1566, hp:80,  pa:6, dmg:[6,14]},
+        {name:'Boufton Blanc', gfx:1566, hp:90,  pa:6, dmg:[7,15]} ],
+      [ {name:'Bouftou',       gfx:1566, hp:80,  pa:6, dmg:[6,14]},
+        {name:'Boufton Blanc', gfx:1566, hp:90,  pa:6, dmg:[7,15]},
+        {name:'Bouftou Royal', gfx:1566, hp:130, pa:7, dmg:[10,20]} ],
+      [ {name:'Bouftou',       gfx:1566, hp:90,  pa:6, dmg:[7,15]},
+        {name:'Boufton Blanc', gfx:1566, hp:90,  pa:6, dmg:[7,15]},
+        {name:'Bouftou Royal', gfx:1566, hp:130, pa:7, dmg:[10,20]},
+        {name:'Bouftou Royal', gfx:1566, hp:130, pa:7, dmg:[10,20]} ],
+      [ {name:'Bouftou',       gfx:1566, hp:90,  pa:6, dmg:[7,15]},
+        {name:'Bouftou Royal', gfx:1566, hp:140, pa:7, dmg:[11,21]},
+        {name:'Chef Bouftou',  gfx:1566, hp:200, pa:8, dmg:[14,24]},
+        {name:'Bouftou Royal', gfx:1566, hp:140, pa:7, dmg:[11,21]} ],
+    ]
+  },
+  {
+    id: 4, name: 'Donjon des Blops', icon: '🫧',
+    desc: 'Les blops envahissent la région',
+    minLevel: 10, itemLevelMin: 20, itemLevelMax: 40,
+    rooms: [
+      [ {name:'Blop Indigo', gfx:1103, hp:110, pa:6, dmg:[8,16]} ],
+      [ {name:'Blop Indigo', gfx:1103, hp:110, pa:6, dmg:[8,16]},
+        {name:'Blop Cerise', gfx:1103, hp:120, pa:6, dmg:[9,17]} ],
+      [ {name:'Blop Indigo', gfx:1103, hp:110, pa:6, dmg:[8,16]},
+        {name:'Blop Cerise', gfx:1103, hp:120, pa:6, dmg:[9,17]},
+        {name:'Blop Coco',   gfx:1103, hp:115, pa:6, dmg:[8,17]} ],
+      [ {name:'Blop Indigo', gfx:1103, hp:120, pa:7, dmg:[9,17]},
+        {name:'Blop Cerise', gfx:1103, hp:120, pa:7, dmg:[9,17]},
+        {name:'Blop Coco',   gfx:1103, hp:120, pa:7, dmg:[9,17]},
+        {name:'Blop Royal',  gfx:1103, hp:180, pa:8, dmg:[13,24]} ],
+      [ {name:'Blop Cerise', gfx:1103, hp:130, pa:7, dmg:[10,18]},
+        {name:'Blop Indigo', gfx:1103, hp:130, pa:7, dmg:[10,18]},
+        {name:'Blop Royal',  gfx:1103, hp:200, pa:8, dmg:[14,26]},
+        {name:'Blop Royal',  gfx:1103, hp:200, pa:8, dmg:[14,26]} ],
+    ]
+  },
+  {
+    id: 5, name: 'Donjon des Craqueleurs', icon: '🪨',
+    desc: 'Méfiez-vous de leur cuirasse',
+    minLevel: 20, itemLevelMin: 35, itemLevelMax: 55,
+    rooms: [
+      [ {name:'Craqueleur',       gfx:1156, hp:220, pa:7, dmg:[12,24]} ],
+      [ {name:'Craqueleur',       gfx:1156, hp:220, pa:7, dmg:[12,24]},
+        {name:'Craqueleur',       gfx:1156, hp:220, pa:7, dmg:[12,24]} ],
+      [ {name:'Craqueleur',       gfx:1156, hp:220, pa:7, dmg:[12,24]},
+        {name:'Craqueleur',       gfx:1156, hp:220, pa:7, dmg:[12,24]},
+        {name:'Grand Craqueleur', gfx:1156, hp:350, pa:9, dmg:[18,32]} ],
+      [ {name:'Craqueleur',       gfx:1156, hp:240, pa:7, dmg:[13,25]},
+        {name:'Grand Craqueleur', gfx:1156, hp:360, pa:9, dmg:[18,32]},
+        {name:'Grand Craqueleur', gfx:1156, hp:360, pa:9, dmg:[18,32]},
+        {name:'Craqueleur',       gfx:1156, hp:240, pa:7, dmg:[13,25]} ],
+      [ {name:'Craqueleur',       gfx:1156, hp:250, pa:7, dmg:[13,26]},
+        {name:'Grand Craqueleur', gfx:1156, hp:380, pa:9, dmg:[20,36]},
+        {name:'Craquebosse',      gfx:1156, hp:500, pa:10,dmg:[25,45]},
+        {name:'Grand Craqueleur', gfx:1156, hp:380, pa:9, dmg:[20,36]} ],
+    ]
+  },
+  {
+    id: 6, name: 'Donjon des Tofus', icon: '🦃',
+    desc: 'Les Tofus protègent leurs œufs',
+    minLevel: 30, itemLevelMin: 50, itemLevelMax: 70,
+    rooms: [
+      [ {name:'Tofu',       gfx:1198, hp:160, pa:6, dmg:[10,20]} ],
+      [ {name:'Tofu',       gfx:1198, hp:160, pa:6, dmg:[10,20]},
+        {name:'Tofu',       gfx:1198, hp:160, pa:6, dmg:[10,20]} ],
+      [ {name:'Tofu',       gfx:1198, hp:160, pa:6, dmg:[10,20]},
+        {name:'Batofu',     gfx:1198, hp:200, pa:7, dmg:[13,24]},
+        {name:'Tofu',       gfx:1198, hp:160, pa:6, dmg:[10,20]} ],
+      [ {name:'Tofu',       gfx:1198, hp:170, pa:6, dmg:[11,21]},
+        {name:'Batofu',     gfx:1198, hp:210, pa:7, dmg:[14,25]},
+        {name:'Batofu',     gfx:1198, hp:210, pa:7, dmg:[14,25]},
+        {name:'Tofu',       gfx:1198, hp:170, pa:6, dmg:[11,21]} ],
+      [ {name:'Tofu',       gfx:1198, hp:180, pa:6, dmg:[11,22]},
+        {name:'Batofu',     gfx:1198, hp:220, pa:7, dmg:[14,26]},
+        {name:'Tofu Royal', gfx:1198, hp:400, pa:9, dmg:[20,38]},
+        {name:'Batofu',     gfx:1198, hp:220, pa:7, dmg:[14,26]} ],
+    ]
+  },
 ];
 
 // SORTS PAR CLASSE (simplifiés pour le prototype)
@@ -1903,6 +2013,8 @@ function renderDungeons() {
         <div class="dungeon-desc">${d.desc}</div>
         <div class="dungeon-meta">
           <span class="dungeon-tag tag-level">Niv. ${d.minLevel}+</span>
+          <span class="dungeon-tag tag-players">📍 ${d.rooms.length} salles</span>
+          ${done ? '<span class="dungeon-tag tag-done">✓ Terminé</span>' : ''}
           <span class="dungeon-tag tag-players">1-4 joueurs</span>
           ${done ? '<span class="dungeon-tag tag-done">✓ Terminé</span>' : ''}
         </div>
@@ -1952,27 +2064,28 @@ function startDungeon(dungeonIndex) {
   state.combat = {
     dungeonIndex,
     dungeon,
+    currentRoom: 0,
+    totalRooms: dungeon.rooms.length,
     playerHp: maxHp,
     playerMaxHp: maxHp,
     playerPa: 6,
     playerMaxPa: 6,
     playerPm: 3,
     playerMaxPm: 3,
-    monsters: dungeon.monsters.map(m => ({ ...m, currentHp: m.hp })),
+    monsters: buildRoomMonsters(dungeon, 0),
     spells,
     spellCooldowns: {},
     turn: 1,
     playerTurn: true,
+    droppedItems: [],
   };
 
   document.getElementById('view-dungeons').style.display = 'none';
   document.getElementById('view-combat').style.display = 'flex';
 
-  // Destroy old animators
   Object.values(animators).forEach(a => a?.destroy?.());
   animators = {};
 
-  // Sprite joueur
   const playerSpriteEl = document.getElementById('player-sprite');
   playerSpriteEl.innerHTML = '';
   const folder = CLASS_SPRITE[state.player.class_id] || 'cra';
@@ -1984,7 +2097,19 @@ function startDungeon(dungeonIndex) {
 
   renderCombat();
   addLog(`⚔ Entrée dans le ${dungeon.name} !`, 'system');
-  addLog(`Tour ${state.combat.turn} — À vous de jouer !`, 'system');
+  addLog(`📍 Salle 1/${dungeon.rooms.length} — À vous de jouer !`, 'system');
+}
+
+function buildRoomMonsters(dungeon, roomIndex) {
+  return dungeon.rooms[roomIndex].map(m => {
+    const variant = m.piouVariant !== undefined ? PIOU_VARIANTS[m.piouVariant] : null;
+    return {
+      ...m,
+      name: m.name || (variant ? variant.name : 'Monstre'),
+      currentHp: m.hp,
+      cssFilter: variant ? variant.filter : 'none',
+    };
+  });
 }
 
 function renderCombat() {
@@ -2019,6 +2144,10 @@ function renderCombat() {
         const monsterAnimInfo = MONSTER_ANIM_INFO[monsterFolder];
         setTimeout(() => {
           animators[`monster_${i}`] = new SpriteAnimator(spriteWrap, monsterPath, monsterAnimInfo);
+          // Applique le filtre couleur si défini
+          if (m.cssFilter && m.cssFilter !== 'none' && animators[`monster_${i}`]?.img) {
+            animators[`monster_${i}`].img.style.filter = m.cssFilter;
+          }
         }, 50);
       } else {
         spriteWrap.innerHTML = `<span style="font-size:80px">${m.icon || '👾'}</span>`;
@@ -2255,24 +2384,53 @@ function endTurn() {
 function checkCombatEnd() {
   const c = state.combat;
   const allDead = c.monsters.every(m => m.currentHp <= 0);
-  
+
   if (allDead) {
-    setTimeout(() => {
-      const xpGain = 100 * (c.dungeonIndex + 1);
-      const kamasGain = Math.floor(Math.random() * 50) + 20;
+    setTimeout(async () => {
+      const xpGain = Math.floor(50 * (c.dungeonIndex + 1) * (c.currentRoom + 1));
+      const kamasGain = Math.floor(Math.random() * 30 + 10) * (c.currentRoom + 1);
       state.player.xp = (state.player.xp || 0) + xpGain;
       state.player.kamas = (state.player.kamas || 0) + kamasGain;
-      
-      // Débloque le donjon suivant
-      if (c.dungeonIndex >= (state.player.dungeon_progress || 0)) {
-        state.player.dungeon_progress = c.dungeonIndex + 1;
-      }
+      addLog(`✨ +${xpGain} XP, +${kamasGain} Kamas`, 'system');
 
-      addLog(`🏆 VICTOIRE ! +${xpGain} XP, +${kamasGain} Kamas`, 'system');
-      notify(`Victoire ! +${xpGain} XP +${kamasGain} Kamas`, 'success');
-      
-      savePlayer();
-      setTimeout(exitCombat, 2000);
+      // Système de drops adaptatif
+      await rollDrops();
+
+      const isLastRoom = c.currentRoom >= c.totalRooms - 1;
+
+      if (isLastRoom) {
+        // Victoire finale du donjon
+        if (c.dungeonIndex >= (state.player.dungeon_progress || 0)) {
+          state.player.dungeon_progress = c.dungeonIndex + 1;
+        }
+        addLog(`🏆 DONJON TERMINÉ ! Félicitations !`, 'system');
+        notify(`Donjon terminé ! +${xpGain} XP`, 'success');
+        savePlayer();
+        setTimeout(exitCombat, 2500);
+      } else {
+        // Salle suivante
+        c.currentRoom++;
+        addLog(`📍 Salle ${c.currentRoom + 1}/${c.totalRooms} — Préparez-vous !`, 'system');
+        notify(`Salle ${c.currentRoom + 1}/${c.totalRooms}`, '');
+
+        setTimeout(() => {
+          // Reset monstres pour la nouvelle salle
+          Object.keys(animators).forEach(k => {
+            if (k.startsWith('monster_')) { animators[k]?.destroy(); delete animators[k]; }
+          });
+          const container = document.getElementById('monsters-container');
+          container.innerHTML = '';
+          delete container.dataset.initialized;
+
+          c.monsters = buildRoomMonsters(c.dungeon, c.currentRoom);
+          c.playerPa = c.playerMaxPa;
+          c.playerPm = c.playerMaxPm;
+          c.turn++;
+          c.playerTurn = true;
+          addLog(`Tour ${c.turn} — À vous de jouer !`, 'system');
+          renderCombat();
+        }, 1500);
+      }
     }, 600);
     return;
   }
@@ -2280,10 +2438,53 @@ function checkCombatEnd() {
   if (c.playerHp <= 0) {
     setTimeout(() => {
       if (animators['player']) animators['player'].play('die');
-      addLog('💀 Vous êtes mort... Fuyez !', 'system');
+      addLog('💀 Vous êtes mort... Retour au camp !', 'system');
       notify('Défaite...', 'error');
       setTimeout(exitCombat, 2500);
     }, 600);
+  }
+}
+
+// Taux de drop selon le niveau du donjon (50% niv1 → 5% niv200)
+function getDropRate(itemLevelMin) {
+  const rate = 0.50 - (itemLevelMin / 200) * 0.45;
+  return Math.max(0.05, rate);
+}
+
+async function rollDrops() {
+  const c = state.combat;
+  const dungeon = c.dungeon;
+  const dropRate = getDropRate(dungeon.itemLevelMin);
+  const nbMonsters = c.monsters.length;
+
+  // Chaque monstre a une chance de dropper
+  let drops = [];
+  for (let i = 0; i < nbMonsters; i++) {
+    if (Math.random() < dropRate) {
+      try {
+        const lvMin = dungeon.itemLevelMin;
+        const lvMax = dungeon.itemLevelMax;
+        // Pioche un item aléatoire dans la tranche de niveau
+        const items = await supaFetch(
+          `items?level=gte.${lvMin}&level=lte.${lvMax}&order=random()&limit=1`
+        );
+        if (items && items.length > 0) {
+          drops.push(items[0]);
+        }
+      } catch(e) {
+        console.warn('Drop fetch failed:', e.message);
+      }
+    }
+  }
+
+  if (drops.length > 0) {
+    drops.forEach(item => {
+      addLog(`🎁 Drop : ${item.name} (niv. ${item.level}) !`, 'crit');
+      // Ajoute à l'inventaire du joueur (simplifié)
+      if (!state.player.droppedItems) state.player.droppedItems = [];
+      state.player.droppedItems.push(item);
+    });
+    notify(`${drops.length} item(s) obtenu(s) !`, 'success');
   }
 }
 
